@@ -1,0 +1,34 @@
+{
+  "routerMap": [
+    {
+      "name": "MainPage",
+      "pageSourceFile": "src/main/ets/pages/MainPage.ets",
+      "buildFunction": "MainPageBuilder"
+    },
+    {
+      "name": "HomeListView",
+      "pageSourceFile": "src/main/ets/pages/tabs/HomeListView.ets",
+      "buildFunction": "HomeListViewBuilder"
+    },
+    {
+      "name": "MineListView",
+      "pageSourceFile": "src/main/ets/pages/tabs/MineTab.ets",
+      "buildFunction": "MineTabContentViewBuilder"
+    },
+    {
+      "name": "MineDetail",
+      "pageSourceFile": "src/main/ets/pages/tabs/MineDetailNavPage.ets",
+      "buildFunction": "MineDetailNavPageBuilder"
+    },
+    {
+      "name": "PrivacyPolicy",
+      "pageSourceFile": "src/main/ets/pages/tabs/PrivacyPolicyPage.ets",
+      "buildFunction": "PrivacyPolicyBuilder"
+    },
+    {
+      "name": "CitySelect",
+      "pageSourceFile": "src/main/ets/pages/tabs/CitySelectPage.ets",
+      "buildFunction": "CitySelectPageBuilder"
+    }
+  ]
+}

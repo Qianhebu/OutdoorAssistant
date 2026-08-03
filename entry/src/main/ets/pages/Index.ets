@@ -1,6 +1,7 @@
-import { hdsMaterial, HdsTabs, HdsTabsController } from '@kit.UIDesignKit';
-import { ConfigurationConstant } from '@kit.AbilityKit';
-import { BackgroundDots } from '../common/BackgroundDots';
+import { DividerMode, hdsMaterial, HdsTabs, HdsTabsController } from '@kit.UIDesignKit';
+import { SymbolGlyphModifier } from '@kit.ArkUI';
+import { AppStorageKeys } from '../common/AppStorageKeys';
+import { OUTDOOR_TABS_LIST, OutdoorTabType } from '../common/TabBarModel';
 import { HomeTab } from './tabs/HomeTab';
 import { RecordTab } from './tabs/RecordTab';
 import { MineTab } from './tabs/MineTab';
@@ -8,43 +9,61 @@ import { MineTab } from './tabs/MineTab';
 @Entry
 @Component
 struct Index {
-  @StorageProp('colorMode') colorMode: number =
-    ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT
-  @StorageLink('topInset') topInset: number = 0
-  @StorageLink('bottomInset') bottomInset: number = 0
-  private tabIconSize: number = 26; // Tab 图标大小
+  @StorageLink(AppStorageKeys.BOTTOM_INSET) bottomInset: number = 0;
+  @State currentIndex: number = OutdoorTabType.HOME;
   private controller: HdsTabsController = new HdsTabsController();
+  private homeScroller: Scroller = new Scroller();
+  private recordScroller: Scroller = new Scroller();
+  private mineScroller: Scroller = new Scroller();
+
+  aboutToAppear(): void {
+    AppStorage.setOrCreate(AppStorageKeys.CURRENT_TAB, this.currentIndex);
+    this.bindTabScroller();
+  }
+
+  private bindTabScroller(): void {
+    this.controller.bindScroller(OutdoorTabType.HOME, this.homeScroller);
+    this.controller.bindScroller(OutdoorTabType.RECORD, this.recordScroller);
+    this.controller.bindScroller(OutdoorTabType.MINE, this.mineScroller);
+  }
+
+  private changeTab(index: number): void {
+    this.currentIndex = index;
+    AppStorage.setOrCreate(AppStorageKeys.CURRENT_TAB, index);
+  }
 
   build() {
-    Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Stretch }) {
-      // 背景点阵（使用绝对定位作为背景层）
-      BackgroundDots()
-        .position({ x: 0, y: 0 })
-        .width('100%')
-        .height('100%')
-        .zIndex(0)
-
-      // 底部导航（占满整个屏幕，在背景之上）
-      HdsTabs({ controller: this.controller }) {
+    Stack() {
+      HdsTabs({ controller: this.controller, index: this.currentIndex }) {
         TabContent() {
-          HomeTab()
+          HomeTab({
+            scroller: this.homeScroller,
+            homeTabController: this.controller
+          })
         }
-        .tabBar(this.buildBottomTabStyle($r('sys.symbol.mountain_2_fill'), '首页'))
+        .tabBar(this.buildBottomTabStyle(OutdoorTabType.HOME))
 
         TabContent() {
-          RecordTab()
+          RecordTab({
+            scroller: this.recordScroller,
+            homeTabController: this.controller
+          })
         }
-        .tabBar(this.buildBottomTabStyle($r('sys.symbol.outward_curvature_fill'), '记录'))
+        .tabBar(this.buildBottomTabStyle(OutdoorTabType.RECORD))
 
         TabContent() {
-          MineTab()
+          MineTab({
+            scroller: this.mineScroller,
+            homeTabController: this.controller
+          })
         }
-        .tabBar(this.buildBottomTabStyle($r('sys.symbol.leaf_2_fill'), '我的'))
+        .tabBar(this.buildBottomTabStyle(OutdoorTabType.MINE))
       }
       .barOverlap(true)
       .barPosition(BarPosition.End)
       .vertical(false)
       .scrollable(false)
+      .divider({ mode: DividerMode.NONE })
       .barFloatingStyle({
         barWidth: { smallWidth: 200, mediumWidth: 300, largeWidth: 400 },
         barBottomMargin: 28,
@@ -52,32 +71,36 @@ struct Index {
         systemMaterialEffect: {
           materialType: hdsMaterial.MaterialType.IMMERSIVE,
           materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE
-        },
+        }
       })
+      .backgroundColor(Color.Transparent)
       .width('100%')
       .height('100%')
-      .zIndex(1)
+      .onAttach(() => {
+        this.controller.preloadItems([OutdoorTabType.HOME, OutdoorTabType.RECORD]);
+      })
+      .onChange((index: number) => {
+        this.changeTab(index);
+      })
     }
+    // .backgroundColor($r('app.color.start_window_background'))
+    .backgroundColor(Color.Orange)
     .width('100%')
     .height('100%')
+    .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP, LayoutSafeAreaEdge.BOTTOM])
   }
 
-  // 底部 Tab 样式
-  @Builder
-  buildBottomTabStyle(icon: Resource, text: string) {
-    Column() {
-      SymbolGlyph(icon)
-        .fontSize(this.tabIconSize)
-        .fontColor([$r('sys.color.ohos_id_color_text_secondary')])
-
-      Text(text)
-        .fontSize(12)
-        .fontColor($r('sys.color.ohos_id_color_text_secondary'))
-        .margin({ top: 4 })
-    }
-    .width('100%')
-    .height('100%')
-    .justifyContent(FlexAlign.Center)
-    .alignItems(HorizontalAlign.Center)
+  private buildBottomTabStyle(tabType: OutdoorTabType): BottomTabBarStyle {
+    const tabItem = OUTDOOR_TABS_LIST[tabType];
+    return BottomTabBarStyle.of({
+      normal: new SymbolGlyphModifier(tabItem.icon)
+        .fontColor([$r('sys.color.ohos_id_color_text_secondary')]),
+      selected: new SymbolGlyphModifier(tabItem.icon)
+        .fontColor(['#00A991'])
+    }, tabItem.title)
+      .labelStyle({
+        unselectedColor: $r('sys.color.ohos_id_color_text_secondary'),
+        selectedColor: '#00A991'
+      })
   }
 }

@@ -11,6 +11,10 @@
     {
       "name": "EntryAbility_label",
       "value": "label"
+    },
+    {
+      "name": "location_permission_reason",
+      "value": "用于户外路线导航、轨迹记录和位置推荐，提供更精准的户外服务"
     }
   ]
 }
