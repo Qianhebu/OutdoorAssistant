@@ -2,9 +2,7 @@ import {
   hdsMaterial,
   HdsNavDestination,
   HdsNavDestinationTitleMode,
-  HdsNavigation,
   HdsNavigationMenuItemOptions,
-  HdsNavigationTitleMode,
   HdsTabsController,
   IconStyleMode,
   ScrollEffectType,
@@ -14,10 +12,10 @@ import { LengthMetrics, promptAction } from '@kit.ArkUI';
 import { authentication } from '@kit.AccountKit';
 import type { BusinessError } from '@kit.BasicServicesKit';
 import { util } from '@kit.ArkTS';
-import { AppStorageKeys } from '../../common/AppStorageKeys';
-import { PageEnum } from '../../common/PageEnum';
-import { StorageKey } from '../../common/StorageKey';
-import { PageContext } from '../../router/PageContext';
+import { AppStorageKeys } from '../constant/AppStorageKeys';
+import { PageEnum } from '../constant/PageEnum';
+import { StorageKey } from '../constant/StorageKey';
+import { PageContext } from '../router/PageContext';
 
 @Observed
 class MineItem {
@@ -41,28 +39,11 @@ interface MineDetailNavParam {
 
 @Component({ freezeWhenInactive: true })
 export struct MineTab {
-  @StorageLink(StorageKey.MINE_TAB_PAGE_CONTEXT) minePageContext: PageContext =
-    AppStorage.get<PageContext>(StorageKey.MINE_TAB_PAGE_CONTEXT) ?? new PageContext();
   scroller: Scroller = new Scroller();
   homeTabController: HdsTabsController = new HdsTabsController();
 
-  aboutToAppear(): void {
-    if (this.minePageContext.navPathStack.size() === 0) {
-      this.minePageContext.openPage({ routerName: PageEnum.MINE_LIST_VIEW }, false);
-    }
-  }
-
   build() {
-    HdsNavigation(this.minePageContext.navPathStack) {
-      MineTabContent({ scroller: this.scroller, homeTabController: this.homeTabController })
-    }
-    .mode(NavigationMode.Stack)
-    .hideBackButton(true)
-    .hideTitleBar(true)
-    .titleMode(HdsNavigationTitleMode.MINI)
-    .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP, LayoutSafeAreaEdge.BOTTOM])
-    .width('100%')
-    .height('100%')
+    MineTabContent({ scroller: this.scroller, homeTabController: this.homeTabController })
   }
 }
 
@@ -182,32 +163,27 @@ struct MineTabContent {
           {
             title: '我的成就',
             icon: $r('sys.symbol.medal'),
-            builder: wrapBuilder(SimpleSheetBuilder),
-            // subtitle: '记录你的户外里程碑——首次登顶、累计里程、连续打卡等。完成挑战即可解锁成就徽章，持续探索解锁更多。'
+            builder: wrapBuilder(SimpleSheetBuilder)
           },
           {
             title: '我的收藏',
             icon: $r('sys.symbol.star'),
-            builder: wrapBuilder(SimpleSheetBuilder),
-            // subtitle: '你收藏的路线、景点和户外攻略都在这里。方便下次快速查看，离线时也能访问已下载的收藏内容。'
+            builder: wrapBuilder(SimpleSheetBuilder)
           },
           {
             title: '我的路线',
             icon: $r('sys.symbol.route'),
-            builder: wrapBuilder(SimpleSheetBuilder),
-            // subtitle: '查看你创建和参与的所有户外路线。包括徒步、骑行、登山等类型的路线记录和轨迹回放。'
+            builder: wrapBuilder(SimpleSheetBuilder)
           },
           {
             title: '离线地图',
             icon: $r('sys.symbol.local_badge_arrow_down'),
-            builder: wrapBuilder(SimpleSheetBuilder),
-            // subtitle: '管理已下载的离线地图包。在无网络环境下也能导航和查看路线，建议出发前提前下载目标区域地图。'
+            builder: wrapBuilder(SimpleSheetBuilder)
           },
           {
             title: '缓存管理',
             icon: $r('sys.symbol.archivebox'),
-            builder: wrapBuilder(SimpleSheetBuilder),
-            // subtitle: '查看和清理应用缓存数据，包括图片缓存、路线数据缓存和临时文件。释放存储空间，保持应用流畅运行。'
+            builder: wrapBuilder(SimpleSheetBuilder)
           }
         ]
       },
@@ -216,8 +192,7 @@ struct MineTabContent {
           {
             title: '更新日志',
             icon: $r('sys.symbol.doc_plaintext'),
-            builder: wrapBuilder(SimpleSheetBuilder),
-            // subtitle: '查看 Outdoor 助手的版本更新记录。了解每次更新带来的新功能、优化和问题修复。'
+            builder: wrapBuilder(SimpleSheetBuilder)
           },
           {
             title: '关于应用',
@@ -244,8 +219,7 @@ struct MineTabContent {
           {
             title: '常见问题',
             icon: $r('sys.symbol.questionmark_circle'),
-            builder: wrapBuilder(SimpleSheetBuilder),
-            // subtitle: '汇总用户常见问题及解答，包括账号登录、健康数据同步、离线地图下载、路线导航等使用指南。'
+            builder: wrapBuilder(SimpleSheetBuilder)
           },
           {
             title: '意见与反馈',
@@ -253,8 +227,7 @@ struct MineTabContent {
             onclick: () => {
               const navParam: MineDetailNavParam = {
                 title: '意见与反馈',
-                subtitle: '告诉我们你的体验问题和改进建议',
-                // detail: '你可以反馈路线推荐、活动记录、健康授权、离线地图或界面体验中的问题，也可以提交希望增加的新功能。我们会根据反馈持续优化 Outdoor 的户外助手能力。'
+                subtitle: '告诉我们你的体验问题和改进建议'
               };
               this.openPage(PageEnum.MINE_DETAIL, navParam);
             }
@@ -274,8 +247,7 @@ struct MineTabContent {
         action: () => {
           const navParam: MineDetailNavParam = {
             title: '意见与反馈',
-            subtitle: '告诉我们你的体验问题和改进建议',
-            // detail: '你可以反馈路线推荐、活动记录、健康授权、离线地图或界面体验中的问题，也可以提交希望增加的新功能。我们会根据反馈持续优化 Outdoor 的户外助手能力。'
+            subtitle: '告诉我们你的体验问题和改进建议'
           };
           this.openPage(PageEnum.MINE_DETAIL, navParam);
         }
@@ -533,9 +505,4 @@ function SimpleSheetBuilder() {
 @Builder
 function AccountSheetBuilder() {
   AccountSheetContent();
-}
-
-@Builder
-export function MineTabContentViewBuilder() {
-  MineTabContent();
 }

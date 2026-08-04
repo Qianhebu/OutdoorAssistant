@@ -2,8 +2,8 @@ import type { common } from '@kit.AbilityKit';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { promptAction } from '@kit.ArkUI';
 import { HdsNavDestination } from '@kit.UIDesignKit';
-import { AppStorageKeys } from '../common/AppStorageKeys';
-import { OutdoorTabType } from '../common/TabBarModel';
+import { AppStorageKeys } from '../constant/AppStorageKeys';
+import { OutdoorTabType } from '../model/TabBarModel';
 import { HomeView } from './HomeView';
 
 const BACK_PRESS_INTERVAL = 1500;

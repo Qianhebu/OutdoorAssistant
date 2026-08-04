@@ -7,7 +7,7 @@ import {
   TitleBarStyleOptions
 } from '@kit.UIDesignKit';
 import { LengthMetrics, promptAction } from '@kit.ArkUI';
-import { AppStorageKeys } from '../../common/AppStorageKeys';
+import { AppStorageKeys } from '../constant/AppStorageKeys';
 
 interface RecordItem {
   title: string;

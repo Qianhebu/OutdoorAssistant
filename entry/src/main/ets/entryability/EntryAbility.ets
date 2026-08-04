@@ -3,9 +3,10 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { SafeAreaManager } from '../utils/SafeAreaManager';
-import { AppStorageKeys } from '../common/AppStorageKeys';
-import { StorageKey } from '../common/StorageKey';
+import { AppStorageKeys } from '../constant/AppStorageKeys';
+import { StorageKey } from '../constant/StorageKey';
 import { PageContext } from '../router/PageContext';
+import { WindowInfo } from '../utils/WindowInfo';
 
 const DOMAIN = 0x0000;
 const TAG = 'OutdoorAssistant';
@@ -19,18 +20,16 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     let mainWindow = windowStage.getMainWindowSync()
 
-    // 缓存窗口对象到 AppStorage
     AppStorage.setOrCreate(AppStorageKeys.MAIN_WINDOW, mainWindow);
     AppStorage.setOrCreate(StorageKey.HOME_PAGE_CONTEXT, new PageContext());
-    AppStorage.setOrCreate(StorageKey.HOME_TAB_PAGE_CONTEXT, new PageContext());
 
-    // 获取当前主题模式
     let colorMode = this.context.config.colorMode ?? ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
     AppStorage.setOrCreate(AppStorageKeys.COLOR_MODE, colorMode);
 
     mainWindow.setUIContent('pages/SplashPage')
       .then(async () => {
         await SafeAreaManager.init(this.context, windowStage)
+        WindowInfo.init(mainWindow)
         this.updateSystemBarStyle(colorMode, mainWindow)
         hilog.info(DOMAIN, TAG, 'SplashPage loaded')
       })
@@ -40,7 +39,6 @@ export default class EntryAbility extends UIAbility {
   }
 
   onConfigurationUpdate(newConfig: Configuration): void {
-    // 监听系统主题变化
     if (newConfig.colorMode === undefined) {
       return
     }
@@ -48,7 +46,6 @@ export default class EntryAbility extends UIAbility {
     AppStorage.setOrCreate(AppStorageKeys.COLOR_MODE, newConfig.colorMode);
     hilog.info(DOMAIN, TAG, 'Color mode changed to: %{public}d', newConfig.colorMode);
 
-    // 获取缓存的窗口对象并更新状态栏样式
     let mainWindow = AppStorage.get<window.Window>(AppStorageKeys.MAIN_WINDOW);
     if (mainWindow) {
       this.updateSystemBarStyle(newConfig.colorMode, mainWindow)
@@ -56,7 +53,6 @@ export default class EntryAbility extends UIAbility {
   }
 
   onForeground(): void {
-    // 应用进入前台时设置状态栏样式
     let colorMode = this.context.config.colorMode ?? ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
     let mainWindow = AppStorage.get<window.Window>(AppStorageKeys.MAIN_WINDOW);
 
@@ -75,16 +71,13 @@ export default class EntryAbility extends UIAbility {
   }
 
   onBackground(): void {
-    // Ability has back to background
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onBackground');
   }
 
-  // 设置状态栏样式
   setStatusBarStyle(colorMode: ConfigurationConstant.ColorMode, windowClass: window.Window): void {
     hilog.info(DOMAIN, 'testTag', 'Setting status bar for colorMode: %{public}d', colorMode);
 
     if (colorMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK) {
-      // 深色模式：状态栏文字为白色，背景为深色
       windowClass.setWindowSystemBarProperties({
         statusBarContentColor: '#FFFFFF',
         navigationBarContentColor: '#FFFFFF'
@@ -95,7 +88,6 @@ export default class EntryAbility extends UIAbility {
           err.code, err.message);
       });
     } else {
-      // 浅色模式：状态栏文字为黑色，背景为浅色
       windowClass.setWindowSystemBarProperties({
         statusBarContentColor: '#000000',
         navigationBarContentColor: '#000000'

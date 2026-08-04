@@ -1,10 +1,10 @@
 import { DividerMode, hdsMaterial, HdsTabs, HdsTabsController } from '@kit.UIDesignKit';
 import { SymbolGlyphModifier, window } from '@kit.ArkUI';
-import { AppStorageKeys } from '../common/AppStorageKeys';
-import { OUTDOOR_TABS_LIST, OutdoorTabType } from '../common/TabBarModel';
-import { HomeTab } from './tabs/HomeTab';
-import { RecordTab } from './tabs/RecordTab';
-import { MineTab } from './tabs/MineTab';
+import { AppStorageKeys } from '../constant/AppStorageKeys';
+import { OUTDOOR_TABS_LIST, OutdoorTabType } from '../model/TabBarModel';
+import { HomeTab } from './HomeTab';
+import { RecordTab } from './RecordTab';
+import { MineTab } from './MineTab';
 
 const STATUS_BAR_LIGHT_THRESHOLD: number = 140;
 
@@ -40,7 +40,8 @@ export struct HomeView {
     this.currentIndex = index;
     AppStorage.setOrCreate(AppStorageKeys.CURRENT_TAB, index);
     if (index === OutdoorTabType.HOME) {
-      this.updateStatusBarContentColor(this.homeScroller.currentOffset().yOffset < STATUS_BAR_LIGHT_THRESHOLD);
+      const offset = this.homeScroller.currentOffset();
+      this.updateStatusBarContentColor((offset?.yOffset ?? 0) < STATUS_BAR_LIGHT_THRESHOLD);
     } else {
       this.updateStatusBarContentColor(false);
     }
@@ -49,10 +50,7 @@ export struct HomeView {
   build() {
     HdsTabs({ controller: this.controller, index: this.currentIndex }) {
       TabContent() {
-        HomeTab({
-          scroller: this.homeScroller,
-          homeTabController: this.controller
-        })
+        HomeTab()
       }
       .tabBar(this.buildBottomTabStyle(OutdoorTabType.HOME))
 

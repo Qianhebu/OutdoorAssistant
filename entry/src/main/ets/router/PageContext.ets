@@ -1,4 +1,4 @@
-import { PageEnum } from '../common/PageEnum';
+import { PageEnum } from '../constant/PageEnum';
 
 export interface RouterParam {
   routerName: PageEnum;

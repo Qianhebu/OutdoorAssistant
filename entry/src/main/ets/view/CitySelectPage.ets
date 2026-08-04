@@ -1,16 +1,3 @@
-/**
- * CitySelectPage - 城市选择页面
- *
- * 布局结构：HdsNavDestination > Stack(List + AlphabetIndexer)
- * - 顶部：当前定位 + 热门城市 + 字母分组城市列表
- * - 右侧：AlphabetIndexer 字母索引条（touch 时弹窗显示二级城市）
- * - titleBar：沉浸光感，暗色前景；滚动时内嵌搜索框渐隐，titleBar 搜索按钮渐显
- * - 搜索模式：点击 titleBar 搜索按钮切换为 titleBar 内 Search+取消，触发键盘
- *
- * 数据流：
- * - 选中城市 → AppStorage.setOrCreate('selectedCity') → HomeListView @Watch 接收
- * - 当前定位城市由路由参数 CitySelectParam.currentCity 传入
- */
 import {
   BottomBuilderShowType,
   hdsMaterial,
@@ -27,8 +14,8 @@ import { vibrator } from '@kit.SensorServiceKit';
 import { geoLocationManager } from '@kit.LocationKit';
 import { abilityAccessCtrl, common, PermissionRequestResult, Permissions } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { StorageKey } from '../../common/StorageKey';
-import { PageContext } from '../../router/PageContext';
+import { StorageKey } from '../constant/StorageKey';
+import { PageContext } from '../router/PageContext';
 
 interface CityGroup {
   letter: string;
@@ -41,48 +28,29 @@ interface CitySelectParam {
 
 @Component
 export struct CitySelectPage {
-  // 全局页面上下文，用于 popPage 返回
   @StorageLink(StorageKey.HOME_PAGE_CONTEXT) appPageContext: PageContext =
     AppStorage.get<PageContext>(StorageKey.HOME_PAGE_CONTEXT) ?? new PageContext();
-  // 路由传入的当前定位城市
   @State currentCity: string = '';
-  // AlphabetIndexer 当前选中索引
   @State selected: number = 0;
-  // titleBar 搜索模式：true 时 titleBar 显示 Search+取消
   @State searchMode: boolean = false;
-  // 搜索文本与结果
   @State searchText: string = '';
   @State searchResults: string[] = [];
-  // AlphabetIndexer 弹窗控制：只有手指触摸索引条时才显示弹窗，列表滚动时关闭
   @State indexerPopupEnabled: boolean = false;
-  // 标记手指是否正在触摸索引条，防止 onDidScroll 误关弹窗
   @State indexerTouching: boolean = false;
-  // 页面内搜索框透明度（滚动时渐隐 1→0）
   @State inlineSearchOpacity: number = 1;
-  // titleBar 搜索按钮透明度（滚动时渐显 0→1）
   @State titleSearchOpacity: number = 0;
-  // titleBar 搜索按钮是否可见（opacity>0.5 时显示，避免不可见时仍可点击）
   @State titleBarSearchVisible: boolean = false;
-  // 重新定位中状态
   @State relocating: boolean = false;
-  // bottomBuilder 是否被隐藏（滚动上滑时）
   @State bottomBuilderHidden: boolean = false;
-  // popup 自动隐藏定时器
   private popupHideTimer: number = -1;
-  // 列表滚动控制器
   private listScroller: Scroller = new Scroller();
-  // 定位权限列表
   private locationPermissions: Permissions[] = ['ohos.permission.APPROXIMATELY_LOCATION', 'ohos.permission.LOCATION'];
-  // titleBar 内 Search 组件控制器，用于 focusInput/caretPosition
   private titleSearchController: SearchController = new SearchController();
-  // 触觉反馈：同一索引不重复振动
   private lastHapticIndex: number = -1;
-  // 热门城市列表
   private hotCities: string[] = [
     '北京', '上海', '广州', '深圳', '杭州', '成都', '重庆', '武汉',
     '南京', '西安', '长沙', '青岛', '厦门', '昆明', '大连', '苏州'
   ];
-  // 字母分组城市数据
   private cityGroups: CityGroup[] = [
     { letter: 'A', cities: ['安庆', '安阳', '鞍山', '安康'] },
     { letter: 'B', cities: ['北京', '保定', '包头', '蚌埠', '滨州'] },
@@ -104,9 +72,7 @@ export struct CitySelectPage {
     { letter: 'Y', cities: ['烟台', '扬州', '银川', '宜昌', '岳阳', '盐城'] },
     { letter: 'Z', cities: ['郑州', '珠海', '中山', '张家界', '遵义', '淄博', '漳州'] }
   ];
-  // 索引条字母数组：# 对应热门/定位区域，A-Z 对应分组
   private indexerLetters: string[] = ['#', ...this.cityGroups.map((g: CityGroup) => g.letter)];
-  // menu 始终包含搜索图标，通过 isEnabled 控制交互
   private searchMenuItem: HdsNavigationMenuItemOptions = {
     content: {
       icon: $r('sys.symbol.magnifyingglass'),
@@ -118,10 +84,8 @@ export struct CitySelectPage {
       }
     }
   };
-  // menu 响应式绑定（整体赋值触发 UI 刷新）
   @State menuOptions: HdsNavigationMenuContentOptions = { value: [] };
 
-  // 将所有分组城市扁平化为一维数组，用于搜索过滤
   private allCities(): string[] {
     const result: string[] = [];
     for (const group of this.cityGroups) {
@@ -132,7 +96,6 @@ export struct CitySelectPage {
     return result;
   }
 
-  // 搜索逻辑：关键词为空则清空结果，否则按包含匹配过滤
   private doSearch(query: string): void {
     const keyword = query.trim();
     if (keyword.length === 0) {
@@ -142,7 +105,6 @@ export struct CitySelectPage {
     this.searchResults = this.allCities().filter((city: string) => city.includes(keyword));
   }
 
-  // 统一更新搜索文本：更新 searchText + 过滤结果 + 重置索引 + 滚动到顶部
   private updateSearchText(value: string): void {
     this.searchText = value;
     this.doSearch(value);
@@ -151,7 +113,6 @@ export struct CitySelectPage {
     this.listScroller.scrollToIndex(0, false);
   }
 
-  // 退出 titleBar 搜索模式：恢复标题栏 + 清空搜索
   private exitTitleSearchMode(): void {
     this.searchMode = false;
     this.titleBarSearchVisible = false;
@@ -159,30 +120,22 @@ export struct CitySelectPage {
     this.searchResults = [];
   }
 
-  // 选中城市：写入 AppStorage 并返回上一页
   private selectCity(city: string): void {
     AppStorage.setOrCreate('selectedCity', city);
     this.appPageContext.popPage();
   }
 
-  // 去除城市名后缀（市/自治区/特别行政区等），使定位结果与列表匹配
   private stripCitySuffix(city: string): string {
     return city.replace(/(市|自治区|特别行政区|自治州|地区|盟)$/, '');
   }
 
-  // 开启 popup 并设置自动隐藏
   private enableIndexerPopup(): void {
     this.indexerPopupEnabled = true;
     if (this.popupHideTimer !== -1) {
       clearTimeout(this.popupHideTimer);
     }
-    // this.popupHideTimer = setTimeout(() => {
-    //   this.indexerPopupEnabled = false;
-    //   this.popupHideTimer = -1;
-    // }, 1500);
   }
 
-  // 关闭 popup
   private disableIndexerPopup(): void {
     this.indexerPopupEnabled = false;
     if (this.popupHideTimer !== -1) {
@@ -191,7 +144,6 @@ export struct CitySelectPage {
     }
   }
 
-  // 重新定位当前城市
   private async relocate(): Promise<void> {
     this.relocating = true;
     this.currentCity = '定位中...';
@@ -214,7 +166,6 @@ export struct CitySelectPage {
     }
   }
 
-  // 请求精确定位
   private requestFreshLocation(): void {
     const request: geoLocationManager.SingleLocationRequest = {
       locatingPriority: 0x502,
@@ -229,7 +180,6 @@ export struct CitySelectPage {
     });
   }
 
-  // 逆地理编码获取城市名
   private reverseGeocode(latitude: number, longitude: number): void {
     const reverseRequest: geoLocationManager.ReverseGeoCodeRequest = {
       latitude: latitude,
@@ -252,8 +202,6 @@ export struct CitySelectPage {
     });
   }
 
-  // 根据列表滚动位置更新 AlphabetIndexer 选中项
-  // startIndex <=2 表示还在热门/定位区域，选中 #；否则映射到对应字母索引
   private updateSelectedByListStart(startIndex: number): void {
     if (this.searchText.trim().length > 0) {
       this.selected = 0;
@@ -265,13 +213,11 @@ export struct CitySelectPage {
     }
   }
 
-  // 切换到 titleBar 搜索模式：显示 Search+取消，延迟请求焦点并触发键盘
   private focusTitleSearch(): void {
     this.updateSearchText('');
     this.getUIContext().getFocusController().requestFocus('city_bottom_search');
   }
 
-  // AlphabetIndexer 触觉反馈：同一索引不重复振动，20ms 轻触
   private playIndexerHaptic(index: number): void {
     if (this.lastHapticIndex === index) {
       return;
@@ -295,9 +241,7 @@ export struct CitySelectPage {
   build() {
     HdsNavDestination() {
       Stack({ alignContent: Alignment.End }) {
-        // 左侧城市列表
         List({ space: 0, initialIndex: 0, scroller: this.listScroller }) {
-          // 有搜索关键词时显示搜索结果，否则显示定位+热门+分组
           if (this.searchText.trim().length > 0) {
             if (this.searchResults.length === 0) {
               ListItem() {
@@ -334,14 +278,12 @@ export struct CitySelectPage {
         .sticky(StickyStyle.Header)
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
         .onScrollIndex((start: number) => {
-          // 列表滚动时同步更新 AlphabetIndexer 选中项
           this.updateSelectedByListStart(start);
         })
         .onDidScroll(() => {
           if (!this.indexerTouching) {
             this.disableIndexerPopup();
           }
-          // 滚动偏移 > 56vp 时认为 bottomBuilder 已隐藏，显示 menu search
           const yOffset = Math.max(0, this.listScroller.currentOffset().yOffset);
           const shouldShowMenu = yOffset > 56;
           if (shouldShowMenu !== this.bottomBuilderHidden) {
@@ -350,25 +292,24 @@ export struct CitySelectPage {
           }
         })
 
-        // 右侧 AlphabetIndexer 字母索引条（搜索模式下隐藏）
         if (this.searchText.trim().length === 0) {
           AlphabetIndexer({ arrayValue: this.indexerLetters, selected: this.selected })
             .autoCollapse(false)
             .enableHapticFeedback(true)
-            .selectedColor($r('sys.color.ohos_id_color_text_primary_dark'))      // 选中项文字颜色
-            .popupColor(0x00A991)                                        // 弹窗一级索引文字颜色：主题绿
-            .selectedBackgroundColor(0x00A991)                           // 选中项背景色：主题绿
-            .popupBackground($r('sys.color.ohos_id_color_dialog_bg'))    // 弹窗背景色
+            .selectedColor($r('sys.color.ohos_id_color_text_primary_dark'))
+            .popupColor(0x00A991)
+            .selectedBackgroundColor(0x00A991)
+            .popupBackground($r('sys.color.ohos_id_color_dialog_bg'))
             .usingPopup(this.indexerPopupEnabled)
             .selectedFont({ size: 12, weight: FontWeight.Bold })
             .popupFont({ size: 24, weight: FontWeight.Bold })
-            .itemSize(26)                                       // 索引项区域大小
+            .itemSize(26)
             .alignStyle(IndexerAlign.Right)
-            .popupItemBorderRadius(26)                          // 弹窗二级项圆角
+            .popupItemBorderRadius(26)
             .popupItemFont({ size: 18 })
-            .itemBorderRadius(13)                               // 索引条项圆角
-            .color($r('sys.color.ohos_id_color_text_secondary')) // 未选中项文字颜色
-            .font({ size: 12 })                                 // 未选中项字体大小
+            .itemBorderRadius(13)
+            .color($r('sys.color.ohos_id_color_text_secondary'))
+            .font({ size: 12 })
             .margin({ right: 4 })
             .onSelect((index: number) => {
               this.playIndexerHaptic(index);
@@ -440,19 +381,16 @@ export struct CitySelectPage {
         menu: this.menuOptions
       },
       style: {
-        // 沉浸光感材质效果
         systemMaterialEffect: {
           materialType: hdsMaterial.MaterialType.IMMERSIVE,
           materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE
         },
-        // 滚动时渐变模糊效果
         scrollEffectOpts: {
           enableScrollEffect: true,
           scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           blurEffectiveStartOffset: LengthMetrics.vp(24),
           blurEffectiveEndOffset: LengthMetrics.vp(96)
         },
-        // 初始样式：透明背景 + 暗色前景（标题/图标/返回键）
         originalStyle: {
           backgroundStyle: {
             backgroundColor: Color.Transparent,
@@ -473,7 +411,6 @@ export struct CitySelectPage {
             }
           }
         },
-        // 滚动生效后样式：页面背景色 + 暗色前景
         scrollEffectStyle: {
           backgroundStyle: {
             backgroundColor: $r('app.color.start_window_background'),
@@ -495,7 +432,6 @@ export struct CitySelectPage {
           }
         }
       },
-      // 组件级安全区避让（HarmonyOS 6.1+），替代 avoidLayoutSafeArea
       enableComponentSafeArea: true
     })
     .bindToScrollable([this.listScroller])
@@ -509,7 +445,6 @@ export struct CitySelectPage {
     .width('100%')
     .height('100%')
     .onReady((ctx: NavDestinationContext) => {
-      // 接收路由参数：当前定位城市
       const param = ctx.pathInfo.param as CitySelectParam;
       if (param?.currentCity) {
         this.currentCity = param.currentCity;
@@ -540,7 +475,6 @@ export struct CitySelectPage {
     .padding({ left: 16, right: 16 })
   }
 
-  // 页面内搜索框（当前定位上方），滚动时渐隐
   @Builder
   buildInlineSearchBox() {
     Search({ value: this.searchText, placeholder: '搜索城市' })
@@ -568,7 +502,6 @@ export struct CitySelectPage {
       })
   }
 
-  // 搜索无结果占位
   @Builder
   buildEmptySearchResult() {
     Column() {
@@ -582,7 +515,6 @@ export struct CitySelectPage {
     .alignItems(HorizontalAlign.Center)
   }
 
-  // 当前定位区域：显示定位图标 + 城市名 + 重新定位按钮
   @Builder
   buildCurrentLocation() {
     Column() {
@@ -638,7 +570,6 @@ export struct CitySelectPage {
         bottom: 12
       })
       .onClick(() => {
-        // 只有定位成功且非失败状态时才可选中
         if (!this.relocating && this.currentCity.length > 0 && this.currentCity !== '定位失败' &&
           this.currentCity !== '定位中...') {
           this.selectCity(this.currentCity);
@@ -648,7 +579,6 @@ export struct CitySelectPage {
     .width('100%')
   }
 
-  // 热门城市区域：Flow 布局标签，当前城市高亮
   @Builder
   buildHotCities() {
     Column({ space: 8 }) {
@@ -687,7 +617,6 @@ export struct CitySelectPage {
     .padding({ bottom: 8 })
   }
 
-  // 字母分组区域：吸顶字母头 + 城市列表
   @Builder
   buildCityGroup(group: CityGroup) {
     Column() {
@@ -705,7 +634,6 @@ export struct CitySelectPage {
     .width('100%')
   }
 
-  // 城市行：当前城市显示 checkmark + 高亮色
   @Builder
   buildCityRow(city: string) {
     Row() {

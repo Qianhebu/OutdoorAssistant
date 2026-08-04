@@ -12,10 +12,11 @@ import { Chip, ChipSize, curves, display, LengthMetrics, promptAction, SymbolGly
 import { abilityAccessCtrl, common, PermissionRequestResult, Permissions } from '@kit.AbilityKit';
 import { geoLocationManager } from '@kit.LocationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { AppStorageKeys } from '../../common/AppStorageKeys';
-import { PageEnum } from '../../common/PageEnum';
-import { StorageKey } from '../../common/StorageKey';
-import { PageContext } from '../../router/PageContext';
+import { AppStorageKeys } from '../constant/AppStorageKeys';
+import { PageEnum } from '../constant/PageEnum';
+import { StorageKey } from '../constant/StorageKey';
+import { PageContext } from '../router/PageContext';
+import { BannerDetailParam } from './BannerDetailPage';
 
 interface RouteRecommend {
   title: string;
@@ -46,6 +47,7 @@ interface SampleBanner {
   desc: string;
   mediaUrl: Resource;
   themeColor: ResourceColor;
+  content: string;
 }
 
 const BANNER_SCALE_FACTOR: number = 3;
@@ -74,37 +76,68 @@ struct HomeListView {
   private locationPermissions: Array<Permissions> =
     ['ohos.permission.APPROXIMATELY_LOCATION', 'ohos.permission.LOCATION'];
   private sampleBanners: SampleBanner[] = [
+    // {
+    //   id: 1,
+    //   title: '春日徒步季',
+    //   subTitle: '东钱湖环湖步道',
+    //   desc: '6.2km 轻松路线，湖光山色尽收眼底',
+    //   mediaUrl: $rawfile('image/banner/banner_hope.jpg'),
+    //   themeColor: '#0A58BF',
+    //   content: ''
+    // },
+    // {
+    //   id: 2,
+    //   title: '山野露营指南',
+    //   subTitle: '星空下的帐篷',
+    //   desc: '从选址到搭帐，新手露营全攻略',
+    //   mediaUrl: $rawfile('image/banner/banner_HMOS.png'),
+    //   themeColor: '#2D6A4F',
+    //   content: ''
+    // },
+    // {
+    //   id: 3,
+    //   title: '四明山森林探险',
+    //   subTitle: '进阶路线推荐',
+    //   desc: '12.8km 森林穿越，挑战自我极限',
+    //   mediaUrl: $rawfile('image/banner/banner_ui_design.png'),
+    //   themeColor: '#6C57F2',
+    //   content: ''
+    // },
+    // {
+    //   id: 4,
+    //   title: '户外安全手册',
+    //   subTitle: '安全第一',
+    //   desc: '急救包清单、天气查询、紧急联络一网打尽',
+    //   mediaUrl: $rawfile('image/banner/banner_ai.png'),
+    //   themeColor: '#174FBF',
+    //   content: ''
+    // },
     {
-      id: 4,
-      title: '适配HUAWEI Pura X MAX',
-      subTitle: '新设备，新体验',
-      desc: 'Pura X MAX适配指导，欢迎查看',
-      mediaUrl: $rawfile('image/banner/banner_hope.jpg'),
-      themeColor: '#0A58BF'
+      id: 5,
+      title: '骑行城市绿道',
+      subTitle: '鄞州绿道骑行',
+      desc: '14.5km 休闲骑行，城市中的绿色氧吧',
+      mediaUrl: $rawfile('image/banner/banner_arkui.png'),
+      themeColor: '#00A991',
+      content: '鄞州绿道全长约 14.5 公里，沿河而建，路面平坦宽阔，非常适合休闲骑行。沿途绿树成荫，空气清新，是城市中难得的绿色氧吧。\n\n路线起点位于鄞州公园南门，途经宁南南路、首南东路、日丽中路，最终到达东部新城。全程约需 1-1.5 小时，适合各年龄段骑行爱好者。\n\n骑行装备建议：\n• 城市通勤车或山地车均可\n• 必备头盔和前后车灯\n• 随车携带简易维修工具\n• 夏季注意防晒和补水\n\n沿途设有多处休息驿站和饮水点，补给充足。周末和节假日人流较多，建议错峰出行，注意礼让行人。'
     },
     {
-      id: 1,
-      title: '开发者你好，欢迎来到HMOS世界',
-      subTitle: 'HarmonyOS代码工坊',
-      desc: '欢迎来到鸿蒙开发者世界，一起体验鸿蒙应用开发。',
-      mediaUrl: $rawfile('image/banner/banner_HMOS.png'),
-      themeColor: '#0A58BF'
+      id: 6,
+      title: '装备速查宝典',
+      subTitle: '一键选购',
+      desc: '登山杖、徒步鞋、防晒衣，专业装备推荐',
+      mediaUrl: $rawfile('image/banner/banner_enabling_kit.png'),
+      themeColor: '#C7792B',
+      content: '户外装备是安全出行的基础。无论你是初入户外的新手，还是经验丰富的老驴，选对装备都能让你的旅途更加安全舒适。\n\n登山杖推荐：\n• 碳纤维超轻款：重量仅 185g，适合长距离徒步\n• 铝合金三节款：性价比高，耐用可靠\n• 折叠收纳款：便携性好，适合旅行携带\n\n徒步鞋选购要点：\n• 防水透气 GORE-TEX 面料为首选\n• Vibram 大底提供优秀抓地力\n• 中高帮设计保护脚踝\n• 建议买大半码，预留长途肿胀空间\n\n防晒装备清单：\n• UPF50+ 防晒衣：轻薄透气，阻挡 99% 紫外线\n• 宽沿防晒帽：保护面部和颈部\n• 运动防晒霜：SPF50+，防水防汗配方\n• UV400 偏光太阳镜：保护眼睛'
     },
     {
-      id: 2,
-      title: 'HMOS代码工坊一多开发实践',
-      subTitle: '一次开发，多端部署',
-      desc: '探索HarmonyOS代码工坊一多开发实践',
-      mediaUrl: $rawfile('image/banner/banner_ui_design.png'),
-      themeColor: '#6C57F2'
-    },
-    {
-      id: 3,
-      title: '开箱即用的AI语音播报能力',
-      subTitle: 'AI朗读',
-      desc: '朗读文本转语音，新闻小说即享听。',
-      mediaUrl: $rawfile('image/banner/banner_ai.png'),
-      themeColor: '#174FBF'
+      id: 7,
+      title: '新手入门攻略',
+      subTitle: '从零开始',
+      desc: '第一次户外？看这篇就够了',
+      mediaUrl: $rawfile('image/banner/banner_quick_start.png'),
+      themeColor: '#5C3D8F',
+      content: '第一次参加户外活动，既兴奋又紧张？别担心，这篇攻略帮你从零开始，安全踏上户外之旅。\n\n出发前准备：\n1. 选择合适的路线：新手建议从 5km 以内的平坦步道开始\n2. 查看天气预报：避免雨天和大风天出行\n3. 告知亲友行程：分享你的路线和预计返回时间\n4. 检查手机电量：充满电并携带充电宝\n\n必备物品清单：\n• 饮用水（至少 1L）和能量零食\n• 防晒霜、帽子和太阳镜\n• 轻便雨衣（以防突发降雨）\n• 基础急救包（创可贴、消毒棉、绷带）\n• 手电筒或头灯\n\n安全须知：\n• 不要独自前往陌生路线\n• 遇到危险及时拨打救援电话\n• 保持手机通讯畅通\n• 留意路标和指示牌，避免迷路\n• 量力而行，不要逞强\n\n记住：安全永远是第一位的。慢慢来，享受户外的美好！'
     }
   ];
   scroller: Scroller = new Scroller();
@@ -358,8 +391,8 @@ struct HomeListView {
     scrollEffectOpts: {
       enableScrollEffect: true,
       scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
-      blurEffectiveStartOffset: LengthMetrics.vp(24),
-      blurEffectiveEndOffset: LengthMetrics.vp(96)
+      blurEffectiveStartOffset: LengthMetrics.vp(this.bannerHeight),
+      blurEffectiveEndOffset: LengthMetrics.vp(this.bannerHeight + 96)
     },
     originalStyle: {
       backgroundStyle: {
@@ -406,13 +439,27 @@ struct HomeListView {
   }
 
   private navigateToSearch(): void {
-    try {
-      this.getUIContext().getRouter().pushUrl({
-        url: 'pages/SearchPage'
-      });
-    } catch (err) {
-      console.error(`Navigate to search page failed: ${JSON.stringify(err)}`);
-    }
+    this.appPageContext.openPage({ routerName: PageEnum.SEARCH_PAGE });
+  }
+
+  private navigateToBannerDetail(banner: SampleBanner): void {
+    const detailParam: BannerDetailParam = {
+      id: banner.id,
+      title: banner.title,
+      subTitle: banner.subTitle,
+      desc: banner.desc,
+      themeColor: banner.themeColor,
+      mediaUrl: banner.mediaUrl,
+      content: banner.content
+    };
+    this.getUIContext().animateTo({
+      duration: 500,
+      curve: curves.interpolatingSpring(0, 1, 273, 33)
+    }, () => {
+      this.appPageContext.navPathStack.pushPath(
+        new NavPathInfo(PageEnum.BANNER_DETAIL, detailParam), false
+      );
+    });
   }
 
   build() {
@@ -438,6 +485,7 @@ struct HomeListView {
       }
       .edgeEffect(EdgeEffect.None)
       .scrollBar(BarState.Off)
+      // .clip(false)
       .height('100%')
       .onScrollFrameBegin((offset: number, state: ScrollState) => {
         if (this.handlePullBanner(offset, state)) {
@@ -454,7 +502,6 @@ struct HomeListView {
         }
       })
     }
-    // .padding({ top: this.topInset })
     .onReady((ctx: NavDestinationContext) => {
       this.handleOnReady(ctx);
     })
@@ -557,7 +604,7 @@ struct HomeListView {
             .color('rgba(255,255,255,0.94)')
             .backgroundColor('rgba(255,255,255,0.32)')
             .style({
-              strokeWidth: 3,
+              strokeWidth: 2,
               enableSmoothEffect: false
             })
             .layoutWeight(1)
@@ -565,8 +612,8 @@ struct HomeListView {
       }
       .width('100%')
       .padding({
-        left: 32,
-        right: 32,
+        left: 16,
+        right: 16,
         bottom: 20
       })
     }
@@ -612,14 +659,18 @@ struct HomeListView {
       .alignItems(HorizontalAlign.Start)
       .padding({
         top: this.topInset + 56,
-        left: 32,
-        right: 32,
+        left: 16,
+        right: 16,
         bottom: 44
       })
     }
     .width('100%')
     .height('100%')
     .renderGroup(true)
+    .geometryTransition(`banner_hero_${banner.id}`, { follow: true })
+    .onClick(() => {
+      this.navigateToBannerDetail(banner);
+    })
   }
 
   @Builder

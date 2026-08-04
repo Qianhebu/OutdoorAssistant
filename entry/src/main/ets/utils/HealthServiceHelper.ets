@@ -1,10 +1,8 @@
-// utils/HealthServiceHelper.ets
 import { healthStore } from '@kit.HealthServiceKit';
 import { common } from '@kit.AbilityKit';
 import { preferences } from '@kit.ArkData';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-// ========== 类型定义 ==========
 export interface HealthProfile {
   steps: number;
   calories: number;
@@ -20,11 +18,7 @@ interface TimeRange {
   endTime: number;
 }
 
-// ========== 注意：使用 static 方法，避免 this 问题 ==========
 export class HealthServiceHelper {
-  /**
-   * 初始化 Health Kit（应用启动时调用）
-   */
   static async init(context: common.UIAbilityContext): Promise<void> {
     try {
       await healthStore.init(context);
@@ -35,10 +29,6 @@ export class HealthServiceHelper {
     }
   }
 
-  /**
-   * 请求用户授权
-   * 注意：个人开发者可申请：步数、热量、距离
-   */
   static async requestAuthorization(context: common.UIAbilityContext): Promise<string[]> {
     try {
       const request: healthStore.AuthorizationRequest = {
@@ -54,7 +44,6 @@ export class HealthServiceHelper {
       });
       console.info(`用户授权成功: ${granted.join(', ')}`);
 
-      // 保存授权状态
       await HealthServiceHelper.saveAuthorizationStatus(context, granted);
 
       return granted;
@@ -65,9 +54,6 @@ export class HealthServiceHelper {
     }
   }
 
-  /**
-   * 检查是否已授权
-   */
   static async checkAuthorization(context: common.UIAbilityContext): Promise<boolean> {
     try {
       const request: healthStore.AuthorizationRequest = {
@@ -90,9 +76,6 @@ export class HealthServiceHelper {
     }
   }
 
-  /**
-   * 获取今日起止时间
-   */
   private static getTodayRange(): TimeRange {
     const now = new Date();
     const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -102,9 +85,6 @@ export class HealthServiceHelper {
     };
   }
 
-  /**
-   * 汇总每日活动采样点
-   */
   private static buildProfileFromSamples(data: DailyActivities[]): HealthProfile {
     let steps = 0;
     let calories = 0;
@@ -125,9 +105,6 @@ export class HealthServiceHelper {
     };
   }
 
-  /**
-   * 读取今日每日活动数据
-   */
   private static async readTodayActivities(): Promise<HealthProfile | null> {
     const timeRange = HealthServiceHelper.getTodayRange();
     const request: healthStore.SamplePointReadRequest<healthStore.healthFields.DailyActivities> = {
@@ -145,9 +122,6 @@ export class HealthServiceHelper {
     }
   }
 
-  /**
-   * 保存授权状态
-   */
   private static async saveAuthorizationStatus(context: common.UIAbilityContext, granted: string[]): Promise<void> {
     try {
       const prefs = await preferences.getPreferences(context, 'health_auth');
@@ -159,15 +133,10 @@ export class HealthServiceHelper {
     }
   }
 
-  /**
-   * 查询今日健康数据
-   */
   static async queryTodayData(context: common.UIAbilityContext): Promise<HealthProfile> {
     try {
-      // 检查授权
       const isAuthorized = await HealthServiceHelper.checkAuthorization(context);
       if (!isAuthorized) {
-        // 尝试重新授权
         const granted = await HealthServiceHelper.requestAuthorization(context);
         if (granted.length === 0) {
           return HealthServiceHelper.getFallbackProfile('用户未授权，请先授权');
@@ -187,7 +156,6 @@ export class HealthServiceHelper {
     } catch (err) {
       const error = err as BusinessError;
       console.error(`查询失败: ${error.code} ${error.message}`);
-      // 尝试从缓存读取
       const cached = await HealthServiceHelper.getCachedData(context);
       if (cached) {
         return cached;
@@ -196,9 +164,6 @@ export class HealthServiceHelper {
     }
   }
 
-  /**
-   * 获取缓存数据
-   */
   private static async getCachedData(context: common.UIAbilityContext): Promise<HealthProfile | null> {
     try {
       const prefs = await preferences.getPreferences(context, 'health_cache');
@@ -218,9 +183,6 @@ export class HealthServiceHelper {
     }
   }
 
-  /**
-   * 保存数据到缓存
-   */
   private static async saveToCache(context: common.UIAbilityContext, profile: HealthProfile): Promise<void> {
     try {
       const prefs = await preferences.getPreferences(context, 'health_cache');
@@ -234,9 +196,6 @@ export class HealthServiceHelper {
     }
   }
 
-  /**
-   * 获取降级数据
-   */
   private static getFallbackProfile(reason: string): HealthProfile {
     return {
       steps: 0,

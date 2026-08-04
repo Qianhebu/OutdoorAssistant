@@ -1,8 +1,8 @@
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { HdsNavigation } from '@kit.UIDesignKit';
-import { AppStorageKeys } from '../common/AppStorageKeys';
-import { PageEnum } from '../common/PageEnum';
-import { StorageKey } from '../common/StorageKey';
+import { AppStorageKeys } from '../constant/AppStorageKeys';
+import { PageEnum } from '../constant/PageEnum';
+import { StorageKey } from '../constant/StorageKey';
 import { PageContext, RouterParam } from '../router/PageContext';
 
 const SPLASH_DURATION = 500;
@@ -25,7 +25,6 @@ struct SplashPage {
       AppStorage.get<PageContext>(StorageKey.HOME_PAGE_CONTEXT)?.replacePage(routerParam, false);
     }, SPLASH_DURATION);
   }
-
 
   build() {
     WithTheme({
