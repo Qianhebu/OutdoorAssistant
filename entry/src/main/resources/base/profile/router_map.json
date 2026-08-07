@@ -34,6 +34,11 @@
       "name": "BannerDetail",
       "pageSourceFile": "src/main/ets/view/BannerDetailPage.ets",
       "buildFunction": "BannerDetailPageBuilder"
+    },
+    {
+      "name": "RouteDetail",
+      "pageSourceFile": "src/main/ets/view/RouteDetailPage.ets",
+      "buildFunction": "RouteDetailPageBuilder"
     }
   ]
 }

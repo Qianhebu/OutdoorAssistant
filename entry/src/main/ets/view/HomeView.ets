@@ -85,7 +85,7 @@ export struct HomeView {
         materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE
       }
     })
-    .backgroundColor($r('app.color.start_window_background'))
+    .backgroundColor($r('sys.color.background_secondary'))
     .width('100%')
     .height('100%')
     .onAttach(() => {

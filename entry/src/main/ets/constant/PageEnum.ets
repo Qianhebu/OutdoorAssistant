@@ -5,5 +5,6 @@ export enum PageEnum {
   PRIVACY_POLICY = 'PrivacyPolicy',
   CITY_SELECT = 'CitySelect',
   SEARCH_PAGE = 'SearchPage',
-  BANNER_DETAIL = 'BannerDetail'
+  BANNER_DETAIL = 'BannerDetail',
+  ROUTE_DETAIL = 'RouteDetail'
 }

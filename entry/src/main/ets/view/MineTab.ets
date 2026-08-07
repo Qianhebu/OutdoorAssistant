@@ -274,9 +274,10 @@ struct MineTabContent {
 
         .bindSheet(this.sheetVisible, this.currentSheetItem?.builder?.builder(), {
           showClose: true,
+          backgroundColor: $r('sys.color.comp_background_primary'),
           preferType: SheetType.BOTTOM,
-          blurStyle: BlurStyle.Regular,
-          detents: [SheetSize.LARGE],
+          blurStyle: BlurStyle.Thin,
+          detents: [SheetSize.LARGE, SheetSize.MEDIUM],
           title: { title: this.currentSheetItem?.title ?? '', subtitle: '' },
           onWillDisappear: () => {
             this.sheetVisible = false;
@@ -365,10 +366,10 @@ struct MineTabContent {
     }
     .width('100%')
     .padding({
-      left: 6,
-      right: 6,
-      top: 6,
-      bottom: 6
+      left: 4,
+      right: 4,
+      top: 4,
+      bottom: 4
     })
     .margin({ bottom: 12 })
     .backgroundColor($r('sys.color.comp_background_primary'))
@@ -426,8 +427,8 @@ struct MineTabContent {
       .onClick(() => this.handleItemClick(item))
 
       Divider()
-        .color('rgba(0, 0, 0, 0.06)')
-        .margin({ left: 68, right: 12 })
+        .color($r('sys.color.ohos_id_color_list_separator'))
+        .margin({ left: 46, right: 14 })
         .visibility(showDivider ? Visibility.Visible : Visibility.None)
     }.width('100%')
   }

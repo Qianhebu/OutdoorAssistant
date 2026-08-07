@@ -37,7 +37,6 @@ export struct CitySelectPage {
   @State searchResults: string[] = [];
   @State indexerPopupEnabled: boolean = false;
   @State indexerTouching: boolean = false;
-  @State inlineSearchOpacity: number = 1;
   @State titleSearchOpacity: number = 0;
   @State titleBarSearchVisible: boolean = false;
   @State relocating: boolean = false;
@@ -475,32 +474,6 @@ export struct CitySelectPage {
     .padding({ left: 16, right: 16 })
   }
 
-  @Builder
-  buildInlineSearchBox() {
-    Search({ value: this.searchText, placeholder: '搜索城市' })
-      .width('100%')
-      .height(40)
-      .searchButton('搜索')
-      .backgroundColor($r('sys.color.comp_background_primary'))
-      .borderRadius(20)
-      .placeholderColor($r('sys.color.ohos_id_color_text_tertiary'))
-      .placeholderFont({ size: 14 })
-      .textFont({ size: 14 })
-      .fontColor($r('sys.color.ohos_id_color_text_primary'))
-      .opacity(this.inlineSearchOpacity)
-      .margin({
-        left: 16,
-        right: 16,
-        top: 12,
-        bottom: 12
-      })
-      .onChange((value: string) => {
-        this.updateSearchText(value);
-      })
-      .onSubmit((value: string) => {
-        this.updateSearchText(value);
-      })
-  }
 
   @Builder
   buildEmptySearchResult() {

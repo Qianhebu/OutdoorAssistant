@@ -6,7 +6,7 @@ import { SafeAreaManager } from '../utils/SafeAreaManager';
 import { AppStorageKeys } from '../constant/AppStorageKeys';
 import { StorageKey } from '../constant/StorageKey';
 import { PageContext } from '../router/PageContext';
-import { WindowInfo } from '../utils/WindowInfo';
+
 
 const DOMAIN = 0x0000;
 const TAG = 'OutdoorAssistant';
@@ -20,6 +20,7 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     let mainWindow = windowStage.getMainWindowSync()
 
+    AppStorage.setOrCreate(AppStorageKeys.HOST_CONTEXT, this.context);
     AppStorage.setOrCreate(AppStorageKeys.MAIN_WINDOW, mainWindow);
     AppStorage.setOrCreate(StorageKey.HOME_PAGE_CONTEXT, new PageContext());
 
@@ -29,7 +30,6 @@ export default class EntryAbility extends UIAbility {
     mainWindow.setUIContent('pages/SplashPage')
       .then(async () => {
         await SafeAreaManager.init(this.context, windowStage)
-        WindowInfo.init(mainWindow)
         this.updateSystemBarStyle(colorMode, mainWindow)
         hilog.info(DOMAIN, TAG, 'SplashPage loaded')
       })
@@ -53,6 +53,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   onForeground(): void {
+    AppStorage.setOrCreate(AppStorageKeys.IS_FOREGROUND, true);
     let colorMode = this.context.config.colorMode ?? ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
     let mainWindow = AppStorage.get<window.Window>(AppStorageKeys.MAIN_WINDOW);
 
@@ -71,33 +72,8 @@ export default class EntryAbility extends UIAbility {
   }
 
   onBackground(): void {
+    AppStorage.setOrCreate(AppStorageKeys.IS_FOREGROUND, false);
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onBackground');
-  }
-
-  setStatusBarStyle(colorMode: ConfigurationConstant.ColorMode, windowClass: window.Window): void {
-    hilog.info(DOMAIN, 'testTag', 'Setting status bar for colorMode: %{public}d', colorMode);
-
-    if (colorMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK) {
-      windowClass.setWindowSystemBarProperties({
-        statusBarContentColor: '#FFFFFF',
-        navigationBarContentColor: '#FFFFFF'
-      }).then(() => {
-        hilog.info(DOMAIN, 'testTag', 'Dark mode status bar set successfully');
-      }).catch((err: BusinessError) => {
-        hilog.error(DOMAIN, 'testTag', 'Failed to set dark mode status bar. Code: %{public}d, Message: %{public}s',
-          err.code, err.message);
-      });
-    } else {
-      windowClass.setWindowSystemBarProperties({
-        statusBarContentColor: '#000000',
-        navigationBarContentColor: '#000000'
-      }).then(() => {
-        hilog.info(DOMAIN, 'testTag', 'Light mode status bar set successfully');
-      }).catch((err: BusinessError) => {
-        hilog.error(DOMAIN, 'testTag', 'Failed to set light mode status bar. Code: %{public}d, Message: %{public}s',
-          err.code, err.message);
-      });
-    }
   }
 
 

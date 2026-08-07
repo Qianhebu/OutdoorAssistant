@@ -49,7 +49,7 @@ struct MainPage {
     .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP, LayoutSafeAreaEdge.BOTTOM])
     .transition(TransitionEffect.OPACITY)
     .hideTitleBar(true)
-    .backgroundColor($r('app.color.start_window_background'))
+    .backgroundColor($r('sys.color.background_secondary'))
     .onBackPressed(() => {
       return this.handleBackPress();
     })
