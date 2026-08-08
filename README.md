@@ -30,7 +30,7 @@ entry/src/main/ets/
     MineDetailNavPage.ets  - 我的详情页
     MineTab.ets            - 我的 Tab
     PrivacyPolicyPage.ets  - 隐私政策页
-    RecordTab.ets          - 记录 Tab
+    MapTab.ets          - 记录 Tab
     SearchPage.ets         - 搜索页
 ```
 

@@ -14,7 +14,7 @@
       },
       {
         "name": "client_id",
-        "value": "118503669"
+        "value": "6917613105574399884"
       }
     ],
     "deliveryWithInstall": true,
@@ -37,6 +37,9 @@
           "abilities": ["EntryAbility"],
           "when": "inuse"
         }
+      },
+      {
+        "name": "ohos.permission.INTERNET"
       },
       {
         "name": "ohos.permission.VIBRATE"

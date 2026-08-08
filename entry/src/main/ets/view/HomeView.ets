@@ -3,7 +3,7 @@ import { SymbolGlyphModifier, window } from '@kit.ArkUI';
 import { AppStorageKeys } from '../constant/AppStorageKeys';
 import { OUTDOOR_TABS_LIST, OutdoorTabType } from '../model/TabBarModel';
 import { HomeTab } from './HomeTab';
-import { RecordTab } from './RecordTab';
+import { MapTab } from './MapTab';
 import { MineTab } from './MineTab';
 
 const STATUS_BAR_LIGHT_THRESHOLD: number = 140;
@@ -55,10 +55,7 @@ export struct HomeView {
       .tabBar(this.buildBottomTabStyle(OutdoorTabType.HOME))
 
       TabContent() {
-        RecordTab({
-          scroller: this.recordScroller,
-          homeTabController: this.controller
-        })
+        MapTab()
       }
       .tabBar(this.buildBottomTabStyle(OutdoorTabType.RECORD))
 

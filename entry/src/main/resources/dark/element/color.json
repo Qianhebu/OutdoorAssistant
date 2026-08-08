@@ -2,19 +2,7 @@
   "color": [
     {
       "name": "start_window_background",
-      "value": "#101816"
-    },
-    {
-      "name": "dot_color",
-      "value": "#374151"
-    },
-    {
-      "name": "dot_color_light",
-      "value": "#E5E7EB"
-    },
-    {
-      "name": "dot_color_dark",
-      "value": "#374151"
+      "value": "#000000"
     }
   ]
 }

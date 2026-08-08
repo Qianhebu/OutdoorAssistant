@@ -7,11 +7,11 @@
         "material": {
           "certpath": "/Users/buqianhe/.ohos/config/default_OutdoorAssistant_kZCpmWKecebgYKSNm8b5JmSdveXUcGWTr_hIrrQ7clQ=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001A9DE71325E043988D117BB8D2BCDA91230AD43763FE646B8A55A7ECA5FA5E3A463A5D89CB31DC",
+          "keyPassword": "0000001A0C9124C2884E9C50FFEEE9D573F372ED61BE21BA25AD878B756ADB0D4743CAA8F168E83C18FB",
           "profile": "/Users/buqianhe/.ohos/config/default_OutdoorAssistant_kZCpmWKecebgYKSNm8b5JmSdveXUcGWTr_hIrrQ7clQ=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "/Users/buqianhe/.ohos/config/default_OutdoorAssistant_kZCpmWKecebgYKSNm8b5JmSdveXUcGWTr_hIrrQ7clQ=.p12",
-          "storePassword": "0000001A63B086D3B9EBE1B71D4935863DD400242D8478A731A9E40ACDF42E51E766E034E23E3E701CB7"
+          "storePassword": "0000001AEE3DBE13F8CE4BC9A3EABF0001A0D8C85F858571AEF616CC52D8970DDE698DD858A9E4CD5BFC"
         }
       }
     ],
@@ -19,8 +19,8 @@
       {
         "name": "default",
         "signingConfig": "default",
-        "targetSdkVersion": "6.1.0(23)",
-        "compatibleSdkVersion": "6.1.0(23)",
+        "targetSdkVersion": "6.1.1(24)",
+        "compatibleSdkVersion": "6.1.1(24)",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "strictMode": {
