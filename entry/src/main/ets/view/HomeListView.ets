@@ -10,7 +10,7 @@ import { AppStorageKeys } from '../constant/AppStorageKeys';
 import { PageEnum } from '../constant/PageEnum';
 import { StorageKey } from '../constant/StorageKey';
 import { PageContext } from '../router/PageContext';
-import { Chip, ChipSize, curves, display, LengthMetrics, promptAction, SymbolGlyphModifier, window } from '@kit.ArkUI';
+import { Chip, ChipSize, curves, display, LengthMetrics, promptAction, SymbolGlyphModifier } from '@kit.ArkUI';
 import { abilityAccessCtrl, common, PermissionRequestResult, Permissions } from '@kit.AbilityKit';
 import { geoLocationManager } from '@kit.LocationKit';
 import {
@@ -25,6 +25,8 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { RouteDetailParam } from './RouteDetailPage';
 import { BannerDetailParam } from './BannerDetailPage';
 import { VideoPlayerView } from './VideoPlayerView';
+import { updateStatusBarContentColor } from '../utils/SystemBarHelper';
+import { saveCurrentLocation } from '../utils/LocationStore';
 
 /** 城市选择页面传参 */
 interface CitySelectParam {
@@ -219,6 +221,7 @@ struct HomeListView {
     try {
       const location = geoLocationManager.getLastLocation();
       if (location) {
+        saveCurrentLocation(location.latitude, location.longitude);
         this.reverseGeocode(location.latitude, location.longitude);
       }
     } catch (err) {
@@ -233,6 +236,7 @@ struct HomeListView {
       locatingTimeoutMs: 10000
     };
     geoLocationManager.getCurrentLocation(request).then((location: geoLocationManager.Location) => {
+      saveCurrentLocation(location.latitude, location.longitude);
       this.reverseGeocode(location.latitude, location.longitude);
     }).catch((err: BusinessError) => {
       if (this.currentCity === '定位中...') {
@@ -285,7 +289,7 @@ struct HomeListView {
     if (yOffset === 0 && this.currentScrollState === ScrollState.Scroll) {
       this.bannerSpringBack();
     }
-    this.updateStatusBarContentColor(yOffset < STATUS_BAR_LIGHT_THRESHOLD);
+    updateStatusBarContentColor(yOffset < STATUS_BAR_LIGHT_THRESHOLD);
   }
 
   /**
@@ -324,15 +328,11 @@ struct HomeListView {
     this.getUIContext().animateTo({ curve: Curve.EaseOut, duration: 250 }, () => {
       this.bannerHeight = this.originBannerHeight;
     });
+    // 回弹动画完成后回到 Banner 顶部区域，同步状态栏为白色
+    updateStatusBarContentColor(true);
   }
 
-  /** 根据滚动位置切换状态栏文字颜色（Banner 区域白色，列表区域黑色） */
-  private updateStatusBarContentColor(isLight: boolean): void {
-    const mainWindow = AppStorage.get<window.Window>(AppStorageKeys.MAIN_WINDOW);
-    mainWindow?.setWindowSystemBarProperties({
-      statusBarContentColor: isLight ? '#FFFFFF' : '#000000'
-    });
-  }
+  /** 根据滚动位置切换状态栏文字颜色（Banner 区域白色，列表区域按主题色） */
 
   // ==================== Banner 轮播进度 ====================
 
@@ -374,12 +374,7 @@ struct HomeListView {
       mediaUrl: banner.mediaUrl,
       content: banner.content
     };
-    this.getUIContext().animateTo({
-      duration: 500,
-      curve: curves.interpolatingSpring(0, 1, 273, 33)
-    }, () => {
-      this.appPageContext.navPathStack.pushPath(new NavPathInfo(PageEnum.BANNER_DETAIL, param), false);
-    });
+    this.appPageContext.navPathStack.pushPath(new NavPathInfo(PageEnum.BANNER_DETAIL, param), false);
   }
 
   /** 跳转路线详情页，使用弹簧曲线转场动画 */
@@ -587,6 +582,11 @@ struct HomeListView {
       // 滚动回调：回弹检测 + 状态栏颜色切换
       .onDidScroll(() => {
         this.handleHomeScroll();
+      })
+      // 滚动停止（含回弹动画结束）：重新同步状态栏颜色
+      .onScrollStop(() => {
+        const yOffset: number = this.scroller.currentOffset()?.yOffset ?? 0;
+        updateStatusBarContentColor(yOffset < STATUS_BAR_LIGHT_THRESHOLD);
       })
       // 滚动到底部：延迟加载更多路线
       .onReachEnd(() => {

@@ -6,5 +6,6 @@ export enum PageEnum {
   CITY_SELECT = 'CitySelect',
   SEARCH_PAGE = 'SearchPage',
   BANNER_DETAIL = 'BannerDetail',
-  ROUTE_DETAIL = 'RouteDetail'
+  ROUTE_DETAIL = 'RouteDetail',
+  RECORD_METRICS_EDIT = 'RecordMetricsEdit'
 }

@@ -1,7 +1,8 @@
 import { DividerMode, hdsMaterial, HdsTabs, HdsTabsController } from '@kit.UIDesignKit';
-import { SymbolGlyphModifier, window } from '@kit.ArkUI';
+import { SymbolGlyphModifier } from '@kit.ArkUI';
 import { AppStorageKeys } from '../constant/AppStorageKeys';
 import { OUTDOOR_TABS_LIST, OutdoorTabType } from '../model/TabBarModel';
+import { updateStatusBarContentColor } from '../utils/SystemBarHelper';
 import { HomeTab } from './HomeTab';
 import { MapTab } from './MapTab';
 import { MineTab } from './MineTab';
@@ -29,21 +30,14 @@ export struct HomeView {
     this.controller.bindScroller(OutdoorTabType.MINE, this.mineScroller);
   }
 
-  private updateStatusBarContentColor(isLight: boolean): void {
-    const mainWindow = AppStorage.get<window.Window>(AppStorageKeys.MAIN_WINDOW);
-    mainWindow?.setWindowSystemBarProperties({
-      statusBarContentColor: isLight ? '#FFFFFF' : '#000000'
-    });
-  }
-
   private changeTab(index: number): void {
     this.currentIndex = index;
     AppStorage.setOrCreate(AppStorageKeys.CURRENT_TAB, index);
     if (index === OutdoorTabType.HOME) {
       const offset = this.homeScroller.currentOffset();
-      this.updateStatusBarContentColor((offset?.yOffset ?? 0) < STATUS_BAR_LIGHT_THRESHOLD);
+      updateStatusBarContentColor((offset?.yOffset ?? 0) < STATUS_BAR_LIGHT_THRESHOLD);
     } else {
-      this.updateStatusBarContentColor(false);
+      updateStatusBarContentColor(false);
     }
   }
 

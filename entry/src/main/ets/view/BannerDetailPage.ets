@@ -1,5 +1,7 @@
-import { hdsMaterial, HdsNavDestination, ScrollEffectType } from '@kit.UIDesignKit';
-import { curves, display, LengthMetrics } from '@kit.ArkUI';
+import {
+  hdsMaterial, HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType
+} from '@kit.UIDesignKit';
+import { display, LengthMetrics } from '@kit.ArkUI';
 import { AppStorageKeys } from '../constant/AppStorageKeys';
 import { StorageKey } from '../constant/StorageKey';
 import { PageContext } from '../router/PageContext';
@@ -23,12 +25,24 @@ struct BannerDetailPage {
   @State params: BannerDetailParam | null = null;
   @State pageInfos: NavPathStack = new NavPathStack();
   @State heroHeight: number = 0;
+  private deviceWidth: number = 0;
+  private naturalHeight: number = 0;
+  private hasExpanded: boolean = false;
 
   aboutToAppear(): void {
     const displayInfo = display.getDefaultDisplaySync();
     const uiContext = this.getUIContext();
-    const deviceWidth = uiContext.px2vp(displayInfo.width);
-    this.heroHeight = deviceWidth * 1.28;
+    this.deviceWidth = uiContext.px2vp(displayInfo.width);
+  }
+
+  private startExpandAnimation(): void {
+    if (this.hasExpanded || this.naturalHeight <= 0) {
+      return;
+    }
+    this.hasExpanded = true;
+    this.getUIContext().animateTo({ duration: 500, curve: Curve.Smooth }, () => {
+      this.heroHeight = this.naturalHeight;
+    });
   }
 
   build() {
@@ -41,16 +55,19 @@ struct BannerDetailPage {
           }
         }
         .width('100%')
+        .height('100%')
       }
-      .clip(true)
-      .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
-      .scrollBar(BarState.Auto)
+      .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true, effectEdge: EffectEdge.END })
+      .scrollBar(BarState.Off)
       .width('100%')
       .height('100%')
-      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
     .titleBar({
-      content: { title: { mainTitle: this.params?.title ?? '详情' } },
+      avoidLayoutSafeArea: false,
+      content: {
+        title: { mainTitle: this.params?.title ?? '详情' }
+      },
       style: {
         systemMaterialEffect: {
           materialType: hdsMaterial.MaterialType.IMMERSIVE,
@@ -59,18 +76,13 @@ struct BannerDetailPage {
         scrollEffectOpts: {
           enableScrollEffect: true,
           scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
-          blurEffectiveStartOffset: LengthMetrics.vp(24),
-          blurEffectiveEndOffset: LengthMetrics.vp(96)
+          blurEffectiveStartOffset: LengthMetrics.vp(this.heroHeight / 2),
+          blurEffectiveEndOffset: LengthMetrics.vp(this.heroHeight / 2 + 48)
         },
         originalStyle: {
-          backgroundStyle: {
-            backgroundColor: Color.Transparent,
-            maskExtraHeight: 24,
-            blurRadius: 12
-          },
           contentStyle: {
             titleStyle: {
-              mainTitleColor: $r('sys.color.font_on_primary')
+              mainTitleColor: $r('sys.color.ohos_id_color_text_primary')
             },
             menuStyle: {
               backgroundColor: $r('sys.color.comp_background_tertiary'),
@@ -103,9 +115,9 @@ struct BannerDetailPage {
           }
         }
       },
-      enableComponentSafeArea: true
     })
     .bindToScrollable([this.scroller])
+    .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideTitleBar(false)
     .backgroundColor($r('app.color.start_window_background'))
     .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP, LayoutSafeAreaEdge.BOTTOM])
@@ -115,61 +127,60 @@ struct BannerDetailPage {
       this.pageInfos = ctx.pathStack;
       const param = ctx.pathInfo.param as BannerDetailParam;
       if (param) {
+        this.heroHeight = this.deviceWidth * 1.28;
+        this.hasExpanded = false;
         this.params = param;
       }
     })
     .onBackPressed(() => {
-      this.getUIContext().animateTo({
-        duration: 500,
-        curve: curves.interpolatingSpring(0, 1, 273, 33)
-      }, () => {
-        this.pageInfos.pop(false);
-      });
+      this.pageInfos.pop(true);
       return true;
     })
   }
 
   @Builder
   buildHeroImage() {
-    Stack({ alignContent: Alignment.BottomStart }) {
+    Column() {
       Image(this.params!.mediaUrl)
         .objectFit(ImageFit.Cover)
         .width('100%')
-        .height('100%')
+        .height(this.heroHeight)
         .backgroundColor(this.params!.themeColor)
+        .onComplete((event) => {
+          if (event && event.width > 0 && event.height > 0) {
+            this.naturalHeight = this.deviceWidth * event.height / event.width;
+            this.startExpandAnimation();
+          }
+        })
 
       Column() {
         Text(this.params!.title)
-          .fontColor($r('sys.color.font_on_primary'))
+          .fontColor($r('sys.color.font_primary'))
           .fontSize(24)
           .fontWeight(FontWeight.Bold)
 
         Text(this.params!.subTitle)
-          .fontColor($r('sys.color.font_on_primary'))
+          .fontColor($r('sys.color.font_secondary'))
           .fontSize(14)
           .fontWeight(FontWeight.Medium)
           .margin({ top: 8, bottom: 6 })
 
         Text(this.params!.desc)
-          .fontColor($r('sys.color.font_on_secondary'))
+          .fontColor($r('sys.color.font_tertiary'))
           .fontSize(13)
           .maxLines(2)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
       .width('100%')
-      .justifyContent(FlexAlign.End)
       .alignItems(HorizontalAlign.Start)
       .padding({
-        top: this.topInset + 56,
         left: 16,
         right: 16,
-        bottom: 44
+        top: 16,
+        bottom: 16
       })
     }
     .width('100%')
-    .height(this.heroHeight)
-    .renderGroup(true)
-    .geometryTransition(`banner_hero_${this.params!.id}`, { follow: true })
   }
 
   @Builder

@@ -186,13 +186,12 @@ struct RouteDetailPage {
             this.buildStatsRow();
             this.buildDetailContent();
             this.buildTips();
-            // 占位符
-            Column().width('100%').height(this.bottomInset + 868)
           }
         }
+        .height('100%')
         .width('100%')
       }
-      // .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true, effectEdge: EffectEdge.END })
+      .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true, effectEdge: EffectEdge.END })
       .scrollBar(BarState.Off)
       .width('100%')
       .height('100%')

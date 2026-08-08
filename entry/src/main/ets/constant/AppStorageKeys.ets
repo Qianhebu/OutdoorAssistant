@@ -6,4 +6,6 @@ export enum AppStorageKeys {
   TOP_INSET = 'topInset',
   BOTTOM_INSET = 'bottomInset',
   IS_FOREGROUND = 'isForeGround',
+  CURRENT_LATITUDE = 'currentLatitude',
+  CURRENT_LONGITUDE = 'currentLongitude',
 }

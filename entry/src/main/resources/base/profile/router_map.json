@@ -39,6 +39,11 @@
       "name": "RouteDetail",
       "pageSourceFile": "src/main/ets/view/RouteDetailPage.ets",
       "buildFunction": "RouteDetailPageBuilder"
+    },
+    {
+      "name": "RecordMetricsEdit",
+      "pageSourceFile": "src/main/ets/view/EditMetricsPage.ets",
+      "buildFunction": "EditMetricsPageBuilder"
     }
   ]
 }

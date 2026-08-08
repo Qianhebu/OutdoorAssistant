@@ -12,3 +12,9 @@
 **/.test
 /.appanalyzer
 /.DS_Store
+/.cache
+/.hvigor
+/.gradle
+/.idea
+/.vscode
+

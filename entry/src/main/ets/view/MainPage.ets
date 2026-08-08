@@ -47,7 +47,6 @@ struct MainPage {
       })
     }
     .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP, LayoutSafeAreaEdge.BOTTOM])
-    .transition(TransitionEffect.OPACITY)
     .hideTitleBar(true)
     .backgroundColor($r('sys.color.background_secondary'))
     .onBackPressed(() => {
