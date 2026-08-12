@@ -29,6 +29,10 @@ export default class EntryAbility extends UIAbility {
 
     mainWindow.setUIContent('pages/SplashPage')
       .then(async () => {
+        mainWindow.getUIContext().getFont().registerFont({
+          familyName: 'SmileySans',
+          familySrc: $rawfile('SmileySans-Oblique.ttf')
+        });
         await SafeAreaManager.init(this.context, windowStage)
         this.updateSystemBarStyle(colorMode, mainWindow)
         hilog.info(DOMAIN, TAG, 'SplashPage loaded')

@@ -18,6 +18,7 @@ export struct HomeView {
   private homeScroller: Scroller = new Scroller();
   private recordScroller: Scroller = new Scroller();
   private mineScroller: Scroller = new Scroller();
+  private previousTabIndex: number = OutdoorTabType.HOME;
 
   aboutToAppear(): void {
     AppStorage.setOrCreate(AppStorageKeys.CURRENT_TAB, this.currentIndex);
@@ -31,6 +32,9 @@ export struct HomeView {
   }
 
   private changeTab(index: number): void {
+    if (index === OutdoorTabType.RECORD && this.currentIndex !== OutdoorTabType.RECORD) {
+      this.previousTabIndex = this.currentIndex;
+    }
     this.currentIndex = index;
     AppStorage.setOrCreate(AppStorageKeys.CURRENT_TAB, index);
     if (index === OutdoorTabType.HOME) {
@@ -41,6 +45,12 @@ export struct HomeView {
     }
   }
 
+  private closeMapTab(): void {
+    const targetIndex =
+      this.previousTabIndex === OutdoorTabType.RECORD ? OutdoorTabType.HOME : this.previousTabIndex;
+    this.changeTab(targetIndex);
+  }
+
   build() {
     HdsTabs({ controller: this.controller, index: this.currentIndex }) {
       TabContent() {
@@ -49,7 +59,12 @@ export struct HomeView {
       .tabBar(this.buildBottomTabStyle(OutdoorTabType.HOME))
 
       TabContent() {
-        MapTab()
+        MapTab({
+          currentTab: this.currentIndex,
+          onClose: () => {
+            this.closeMapTab();
+          }
+        })
       }
       .tabBar(this.buildBottomTabStyle(OutdoorTabType.RECORD))
 
