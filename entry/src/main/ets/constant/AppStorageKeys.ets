@@ -8,4 +8,5 @@ export enum AppStorageKeys {
   IS_FOREGROUND = 'isForeGround',
   CURRENT_LATITUDE = 'currentLatitude',
   CURRENT_LONGITUDE = 'currentLongitude',
+  MAP_TYPE = 'selectedMapType',
 }

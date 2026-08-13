@@ -1,10 +1,8 @@
 import { map, mapCommon, MapComponent } from '@kit.MapKit';
 import { geoLocationManager } from '@kit.LocationKit';
+import { CapsuleSegmentButtonV2, ColorMetrics, LengthMetrics, SegmentButtonV2Items } from '@kit.ArkUI';
 import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
 import { abilityAccessCtrl, common, PermissionRequestResult, Permissions } from '@kit.AbilityKit';
-import {
-  hdsMaterial, HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType
-} from '@kit.UIDesignKit';
 import { saveCurrentLocation } from '../utils/LocationStore';
 import { OutdoorTabType } from '../model/TabBarModel';
 import { AppStorageKeys } from '../constant/AppStorageKeys';
@@ -29,6 +27,8 @@ const MAP_CONTROL_GAP: number = 8;
 const MAP_CONTROL_SINGLE_BUTTON_COUNT: number = 2;
 /** 系统缩放控件高度，用于让自定义控件位于系统缩放上方 (vp) */
 const MAP_SYSTEM_ZOOM_CONTROL_HEIGHT: number = MAP_CONTROL_SIZE * 2 + 1;
+/** 系统我的定位控件高度 (vp) */
+const MAP_SYSTEM_LOCATION_CONTROL_HEIGHT: number = MAP_CONTROL_SIZE;
 /** 地图底部 padding 与系统控件之间的间距 (vp) */
 const MAP_SYSTEM_CONTROL_PADDING_GAP: number = 12;
 /** 标题栏高度，用于放置系统指南针 (vp) */
@@ -39,6 +39,18 @@ const MAP_COMPASS_TOP_GAP: number = 8;
 const MAP_TAB_BAR_HEIGHT: number = 64;
 /** 悬浮 Tab 栏距底部间距 (vp) */
 const MAP_TAB_BAR_BOTTOM_MARGIN: number = 28;
+/** 开始运动按钮距 Tab 栏上方间距 (vp) */
+const MAP_START_BUTTON_BOTTOM_GAP: number = 16;
+/** 开始运动按钮宽度和高度 (vp) */
+const MAP_START_BUTTON_WIDTH_AND_HEIGHT: number = 80;
+/** 图层选择半模态高度 (vp)，与 detents 一致 */
+const MAP_LAYER_SHEET_HEIGHT: number = 280;
+/** 开始运动面板展开后的高度 (vp) */
+const WORKOUT_PANEL_HEIGHT: number = 260;
+/** 开始运动面板展开后距左右边缘的间距 (vp) */
+const WORKOUT_PANEL_SIDE_GAP: number = 12;
+/** 卫星图层叠加路网的最小缩放级别，缩小到该级别以下时切换为混合地图以显示道路 */
+const MAP_SATELLITE_ROAD_ZOOM_THRESHOLD: number = 15;
 
 /** 运动类型枚举 */
 enum SportType {
@@ -668,32 +680,74 @@ export struct MapTab {
     this.applySheetLayout();
   }
 
-  /** 选中图层后切换地图类型，关闭图层半模态，恢复坐标半模态 */
+  /** 从持久化存储恢复上次选中的地图图层，无记录时返回标准地图 */
+  private loadPersistedMapType(): mapCommon.MapType {
+    const saved: number | undefined = AppStorage.get<number>(AppStorageKeys.MAP_TYPE);
+    for (let i = 0; i < MAP_LAYER_OPTIONS.length; i++) {
+      if (MAP_LAYER_OPTIONS[i].mapType === saved) {
+        return MAP_LAYER_OPTIONS[i].mapType;
+      }
+    }
+    return mapCommon.MapType.STANDARD;
+  }
+
+  /** 切换地图图层：仅在不同模式下切换地图类型并关闭图层半模态 */
   private selectMapLayer(option: MapLayerOption): void {
+    if (option.mapType === this.selectedMapType) {
+      return;
+    }
     this.selectedMapType = option.mapType;
     this.mapController?.setMapType(option.mapType);
+    this.applySatelliteRoadOverlay();
+    AppStorage.setOrCreate(AppStorageKeys.MAP_TYPE, option.mapType);
+    // 切换地图类型后部分渲染层会重建，重新绘制轨迹折线确保线路可见
+    if (this.routePoints.length >= 2) {
+      this.updateRoutePolyline();
+    }
+    // 非标准地图不支持 3D 模式，切换时退出 3D 回到 2D 俯视
+    if (this.isMap3DMode && option.mapType !== mapCommon.MapType.STANDARD) {
+      this.isMap3DMode = false;
+      this.applyMyLocationStyle();
+      this.animateToCurrentLocationWithMode();
+    }
     this.isLayerSheetShown = false;
-    this.isShowSheet = this.isMapActive;
     this.applySheetLayout();
   }
 
-  /** 悬浮 Tab 栏占用的底部总高度（含距底边距）(vp) */
+  /** 卫星图层缩小到阈值以下时叠加路网（切换为混合地图），放大后恢复纯卫星图 */
+  private applySatelliteRoadOverlay(): void {
+    const controller = this.mapController;
+    if (!controller || this.selectedMapType !== mapCommon.MapType.SATELLITE) {
+      return;
+    }
+    if (this.mapZoom < MAP_SATELLITE_ROAD_ZOOM_THRESHOLD) {
+      controller.setMapType(mapCommon.MapType.HYBRID);
+    } else {
+      controller.setMapType(mapCommon.MapType.SATELLITE);
+    }
+  }
+
   private tabBarOccupiedHeight(): number {
-    return MAP_TAB_BAR_BOTTOM_MARGIN + MAP_TAB_BAR_HEIGHT;
+    return MAP_TAB_BAR_HEIGHT + MAP_SYSTEM_CONTROL_PADDING_GAP
   }
 
   /** 计算系统控件随半模态上移的底部 padding */
   private mapSystemBottomPaddingVp(): number {
-    if (this.isShowSheet && this.sheetHeightVp > 0) {
-      return this.sheetHeightVp + MAP_SYSTEM_CONTROL_PADDING_GAP + this.tabBarOccupiedHeight();
+    if (this.isShowSheet) {
+      return WORKOUT_PANEL_HEIGHT + this.bottomInset + MAP_SYSTEM_CONTROL_PADDING_GAP;
     }
-    return this.bottomInset + MAP_CONTROL_BOTTOM_MARGIN + this.tabBarOccupiedHeight();
+    if (this.isLayerSheetShown) {
+      return MAP_LAYER_SHEET_HEIGHT + MAP_SYSTEM_CONTROL_PADDING_GAP;
+    }
+    return this.bottomInset + this.tabBarOccupiedHeight()
   }
 
-  /** 计算控件组底部边距：贴着系统缩放控件上方，并跟随地图 padding 上移 */
+  /** 计算控件组底部边距：贴着系统我的定位控件和缩放控件上方，并跟随地图 padding 上移 */
   private mapControlsBottomMargin(): number {
     return this.mapSystemBottomPaddingVp() +
       MAP_SYSTEM_ZOOM_CONTROL_HEIGHT +
+      MAP_CONTROL_GAP +
+      MAP_SYSTEM_LOCATION_CONTROL_HEIGHT +
       MAP_CONTROL_GAP;
   }
 
@@ -702,13 +756,29 @@ export struct MapTab {
     return Math.max(0, this.containerWidthVp - MAP_CONTROL_RIGHT_MARGIN - MAP_CONTROL_SIZE);
   }
 
-  /** 计算控件组 Y 坐标：底部对齐，向上留出所有控件高度 */
+  /** 当前右侧地图控件的可见按钮数量：标准地图显示 3D + 图层，其他图层仅显示图层 */
+  private mapControlVisibleCount(): number {
+    return this.selectedMapType === mapCommon.MapType.STANDARD ? MAP_CONTROL_SINGLE_BUTTON_COUNT : 1;
+  }
+
+  /** 计算控件组 Y 坐标：底部对齐，向上留出所有可见控件高度 */
   private mapControlsY(): number {
-    const controlGroupCount: number = MAP_CONTROL_SINGLE_BUTTON_COUNT + 1
+    const controlGroupCount: number = this.mapControlVisibleCount();
     const controlsHeight: number =
       MAP_CONTROL_SIZE * controlGroupCount +
         MAP_CONTROL_GAP * (controlGroupCount - 1);
     return Math.max(0, this.containerHeightVp - this.mapControlsBottomMargin() - controlsHeight);
+  }
+
+  /** 开始运动按钮 X 坐标：水平居中 */
+  private startButtonX(): number {
+    return Math.max(0, (this.containerWidthVp - MAP_START_BUTTON_WIDTH_AND_HEIGHT) / 2);
+  }
+
+  /** 开始运动按钮 Y 坐标：位于底部 Tab 栏上方 */
+  private startButtonY(): number {
+    return Math.max(0, this.containerHeightVp - this.bottomInset -
+      this.tabBarOccupiedHeight() - MAP_START_BUTTON_WIDTH_AND_HEIGHT);
   }
 
   /** 调整系统指南针位置到标题栏下方 */
@@ -777,10 +847,13 @@ export struct MapTab {
           const pos: mapCommon.CameraPosition = ctrl.getCameraPosition();
           this.compassBearing = pos.bearing ?? 0;
           this.mapZoom = pos.zoom;
+          this.applySatelliteRoadOverlay();
         }
       });
+      // 控制路况显示
       this.mapController.setTrafficEnabled(false);
       this.applySheetLayout();
+      this.applySatelliteRoadOverlay();
       if (this.isMapActive && this.isPermissionGranted) {
         this.startLocationTracking();
         this.startSatelliteTracking();
@@ -818,7 +891,7 @@ export struct MapTab {
   /** 坐标信息半模态配置：两档高度、可拖拽、背景可交互 */
   private buildSheetOptions(): SheetOptions {
     return {
-      detents: this.isWorkoutStarted ? [360, 180] : [180],
+      detents: [400],
       preferType: SheetType.BOTTOM,
       dragBar: true,
       showClose: false,
@@ -838,19 +911,26 @@ export struct MapTab {
     };
   }
 
-  /** 图层选择半模态配置：固定高度、带关闭按钮、带标题 */
+  /** 图层选择半模态配置：固定高度、带关闭按钮、禁止下拉关闭 */
   private buildLayerSheetOptions(): SheetOptions {
     return {
-      detents: [260],
+      detents: [280],
       preferType: SheetType.BOTTOM,
       dragBar: true,
       showClose: true,
       enableOutsideInteractive: true,
-      backgroundColor: $r('sys.color.comp_background_primary'),
-      title: { title: '选择地图图层', subtitle: '' },
+      // blurStyle: BlurStyle.Thin,
+      title: { title: '地图图层类型', subtitle: '' },
       onWillDismiss: (action: DismissSheetAction) => {
+        if (action.reason !== DismissReason.SLIDE_DOWN) {
+          action.dismiss();
+        }
+      },
+      onWillSpringBackWhenDismiss: (action: SpringBackAction) => {
+        action.springBack();
+      },
+      onDisappear: () => {
         this.isLayerSheetShown = false;
-        this.isShowSheet = this.isMapActive;
         this.applySheetLayout();
       }
     };
@@ -872,6 +952,8 @@ export struct MapTab {
   }
 
   aboutToAppear(): void {
+    PersistentStorage.persistProp(AppStorageKeys.MAP_TYPE, mapCommon.MapType.STANDARD);
+    this.selectedMapType = this.loadPersistedMapType();
     this.initMap();
     if (this.currentTab === OutdoorTabType.RECORD) {
       this.activateMapPage();
@@ -883,133 +965,151 @@ export struct MapTab {
   }
 
   build() {
-    HdsNavDestination() {
-      Stack() {
-        // 地图组件，绑定坐标信息半模态
-        if (this.mapOptions && this.mapCallback) {
-          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.mapCallback })
-            .width('100%')
-            .height('100%')
-            .bindSheet(this.isShowSheet, this.buildSheetContent(), this.buildSheetOptions())
-        }
-        // 自定义地图控件（覆盖在地图上方）
-        this.buildMapControls()
+    Stack({ alignContent: Alignment.Top }) {
+      // 地图组件，绑定坐标信息半模态
+      if (this.mapOptions && this.mapCallback) {
+        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.mapCallback })
+          .width('100%')
+          .height('100%')
+        // .bindSheet(this.isShowSheet, this.buildSheetContent(), this.buildSheetOptions())
       }
-      .width('100%')
-      .height('100%')
-      // 图层选择半模态绑定在整个 Stack 上
-      .bindSheet(this.isLayerSheetShown, this.buildLayerSheetContent(), this.buildLayerSheetOptions())
-      .onAreaChange((oldValue: Area, newValue: Area) => {
-        const width: number = newValue.width as number;
-        const height: number = newValue.height as number;
-        if (width > 0) {
-          this.containerWidthVp = width;
-          this.applySystemControlPositions();
-        }
-        if (height > 0) {
-          this.containerHeightVp = height;
-          this.applySheetLayout();
-        }
-      })
+
+      // 顶部自定义标题栏：坐标文本 + GNSS 芯片
+      this.buildStackBuilder()
+
+      // 自定义地图控件（覆盖在地图上方）
+      this.buildMapControls()
+
+      // 开始运动按钮（悬浮在底部 Tab 栏上方）
+      this.buildStartWorkoutButton()
+
     }
-    .titleBar({
-      avoidLayoutSafeArea: true,
-      content: {
-        title: { mainTitle: '' },
-        // 标题栏自定义内容：坐标文本 + GNSS 芯片
-        stackBuilder: (): void => this.buildStackBuilder(),
-        backIcon: {
-          action: () => {
-            this.onClose?.();
-          }
-        }
-      },
-      style: {
-        // 沉浸式毛玻璃效果
-        systemMaterialEffect: {
-          materialType: hdsMaterial.MaterialType.IMMERSIVE,
-          materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE
-        },
-        scrollEffectOpts: {
-          enableScrollEffect: true,
-          scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR
-        },
-        originalStyle: {
-          contentStyle: {
-            titleStyle: {
-              mainTitleColor: $r('sys.color.ohos_id_color_text_primary')
-            },
-            menuStyle: {
-              backgroundColor: $r('sys.color.comp_background_tertiary'),
-              iconColor: $r('sys.color.icon_primary')
-            },
-            backIconStyle: {
-              backgroundColor: $r('sys.color.comp_background_tertiary'),
-              iconColor: $r('sys.color.icon_primary')
-            }
-          }
-        },
-        scrollEffectStyle: {
-          backgroundStyle: {
-            backgroundColor: $r('app.color.start_window_background'),
-            maskExtraHeight: 32,
-            blurRadius: 18
-          },
-          contentStyle: {
-            titleStyle: {
-              mainTitleColor: $r('sys.color.ohos_id_color_text_primary')
-            },
-            menuStyle: {
-              backgroundColor: $r('sys.color.comp_background_tertiary'),
-              iconColor: $r('sys.color.icon_primary')
-            },
-            backIconStyle: {
-              backgroundColor: $r('sys.color.comp_background_tertiary'),
-              iconColor: $r('sys.color.icon_primary')
-            }
-          }
-        }
-      },
-    })
-    .titleMode(HdsNavDestinationTitleMode.MINI)
-    .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP, LayoutSafeAreaEdge.BOTTOM])
-    .backgroundColor($r('sys.color.background_secondary'))
     .width('100%')
     .height('100%')
-    .onBackPressed(() => {
-      this.onClose?.();
-      return true;
+    // 图层选择半模态绑定在整个 Stack 上
+    .bindSheet(this.isLayerSheetShown, this.buildLayerSheetContent(), this.buildLayerSheetOptions())
+    .onAreaChange((oldValue: Area, newValue: Area) => {
+      const width: number = newValue.width as number;
+      const height: number = newValue.height as number;
+      if (width > 0) {
+        this.containerWidthVp = width;
+        this.applySystemControlPositions();
+      }
+      if (height > 0) {
+        this.containerHeightVp = height;
+        this.applySheetLayout();
+      }
     })
+    .backgroundColor($r('sys.color.background_secondary'))
   }
 
   /** 标题栏自定义布局：左侧坐标文本 + 右侧 GNSS 卫星状态芯片 */
   @Builder
   buildStackBuilder() {
-    Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
-      Row() {
-        Text(`${this.titleText}${this.subTitleText}`)
-          .fontSize(10)
-          .fontWeight(FontWeight.Medium)
-          .fontColor($r('sys.color.ohos_id_color_text_primary'))
-          .textAlign(TextAlign.Center)
-          .maxLines(2)
-      }
-      .padding({
-        left: 10,
-        right: 10,
-        top: 8,
-        bottom: 8
-      })
-      .borderRadius(20)
-      .border({ width: 1, color: $r('sys.color.indicator_border_color') })
-      .backgroundBlurStyle(BlurStyle.Thin, { colorMode: ThemeColorMode.SYSTEM })
-      .alignItems(VerticalAlign.Center)
+    Column() {
+      Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
+        Row() {
+          Text(`${this.titleText}${this.subTitleText}`)
+            .fontSize(11)
+            .fontWeight(FontWeight.Medium)
+            .fontColor($r('sys.color.ohos_id_color_text_primary'))
+            .textAlign(TextAlign.Center)
+            .maxLines(2)
+        }
+        .padding({
+          left: 10,
+          right: 10,
+          top: 8,
+          bottom: 8
+        })
+        .borderRadius(20)
+        .border({ width: 1, color: $r('sys.color.indicator_border_color') })
+        .backgroundBlurStyle(BlurStyle.Thin, { colorMode: ThemeColorMode.SYSTEM })
+        .alignItems(VerticalAlign.Center)
 
-      this.buildGnssChip()
+        this.buildGnssChip()
+      }
+      .width('100%')
+      .height(MAP_TITLE_BAR_HEIGHT)
+      .padding({ left: 12, right: 12 })
     }
     .width('100%')
-    .height(56)
-    .padding({ left: 64, right: 12 })
+    .padding({ top: this.topInset })
+  }
+
+  /** 开始运动按钮：悬浮在底部 Tab 栏上方，水平居中，含运动类型分段切换 + 播放按钮 */
+  @Builder
+  buildStartWorkoutButton() {
+    if (this.containerHeightVp > 0) {
+      Column({ space: 16 }) {
+        this.buildSportTypeSegmented()
+        SymbolGlyph($r('sys.symbol.play_circle_fill'))
+          .fontSize(80)
+          .renderingStrategy(SymbolRenderingStrategy.MULTIPLE_COLOR)
+          .fontColor(['#60C25A', '#FFFFFF'])
+          .width(80)
+          .height(80)
+          .onClick(() => {
+            this.isShowSheet = true;
+            this.applySheetLayout();
+          })
+      }
+      .width(this.isShowSheet ? this.containerWidthVp - WORKOUT_PANEL_SIDE_GAP * 2 : 'auto')
+      .height(this.isShowSheet ? WORKOUT_PANEL_HEIGHT : 'auto')
+      .alignItems(HorizontalAlign.Center)
+      .position({
+        x: this.containerWidthVp / 2,
+        y: this.isShowSheet ? this.containerHeightVp - this.bottomInset - this.tabBarOccupiedHeight() :
+          (this.startButtonY() + MAP_START_BUTTON_WIDTH_AND_HEIGHT)
+      })
+      .markAnchor({ x: '50%', y: '100%' })
+      .zIndex(3)
+      .borderRadius(36)
+      .padding({
+        left: 12,
+        right: 12,
+        top: 12,
+        bottom: 12
+      })
+      .backgroundBlurStyle(BlurStyle.Thin, { colorMode: ThemeColorMode.SYSTEM })
+      .border({ width: 1, color: $r('sys.color.indicator_border_color') })
+
+      // .backgroundColor(Color.Orange)
+    }
+  }
+
+  /** 运动类型分段按钮选项（仅图标） */
+  private segmentSportItems: SegmentButtonV2Items = new SegmentButtonV2Items([
+    { symbol: $r('sys.symbol.figure_hiking') },
+    { symbol: $r('sys.symbol.figure_run') },
+    { symbol: $r('sys.symbol.figure_walk') }
+  ]);
+
+  /** 运动类型分段按钮：使用原生分段按钮组件，仅展示 SPORT_TYPE_OPTIONS 图标 */
+  @Builder
+  buildSportTypeSegmented() {
+    Row() {
+      CapsuleSegmentButtonV2({
+        items: this.segmentSportItems,
+        selectedIndex: this.selectedSportIndex,
+        $selectedIndex: (index: number) => {
+          this.selectedSportIndex = index;
+        },
+        itemSymbolFontSize: LengthMetrics.vp(26),
+        itemSymbolFontColor: ColorMetrics.resourceColor('#8B9499'),
+        itemSelectedSymbolFontColor: ColorMetrics.resourceColor('#00A991'),
+        itemSelectedBackgroundColor: ColorMetrics.rgba(0, 169, 145, 0.25),
+        buttonBackgroundColor: ColorMetrics.rgba(255, 255, 255, 0.4),
+        buttonBackgroundBlurStyle: BlurStyle.Thin,
+        itemSpace: LengthMetrics.vp(4),
+        itemMinHeight: LengthMetrics.vp(40),
+        itemBorderRadius: LengthMetrics.vp(20),
+        buttonBorderRadius: LengthMetrics.vp(22),
+        buttonPadding: LengthMetrics.vp(2)
+      })
+    }
+    .width(132)
+    .height(44)
   }
 
   /** GNSS 卫星状态芯片：显示卫星数量，未定位时显示"正在搜索..." */
@@ -1020,18 +1120,18 @@ export struct MapTab {
       //   .fontSize(21)
       //   .fontColor([$r('sys.color.icon_secondary')])
       Text('GNSS')
-        .fontSize(10)
+        .fontSize(11)
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Medium)
 
       if (!this.isGpsLocked) {
         Text('正在搜索...')
-          .fontSize(10)
+          .fontSize(11)
           .fontColor($r('sys.color.ohos_id_color_text_primary'))
       } else {
         if (this.satelliteCount > 0) {
           Text(`${this.satelliteCount}`)
-            .fontSize(10)
+            .fontSize(11)
             .fontColor('#00A991')
             .fontWeight(FontWeight.Medium)
         }
@@ -1050,25 +1150,27 @@ export struct MapTab {
     .alignItems(VerticalAlign.Center)
   }
 
-  /** 3D 模式切换按钮 */
+  /** 3D 模式切换按钮：仅标准地图显示，其他图层不支持 3D */
   @Builder
   buildMapControls() {
     Column({ space: MAP_CONTROL_GAP }) {
-      Stack({ alignContent: Alignment.Center }) {
-        Text(this.isMap3DMode ? '2D' : '3D')
-          .fontSize(18)
-          .fontWeight(FontWeight.Bolder)
-          .fontFamily('SmileySans')
-          .fontColor($r('sys.color.ohos_id_color_text_primary'))
+      if (this.selectedMapType === mapCommon.MapType.STANDARD) {
+        Stack({ alignContent: Alignment.Center }) {
+          Text(this.isMap3DMode ? '2D' : '3D')
+            .fontSize(18)
+            .fontWeight(FontWeight.Bolder)
+            .fontFamily('SmileySans')
+            .fontColor($r('sys.color.ohos_id_color_text_primary'))
+        }
+        .width(MAP_CONTROL_SIZE)
+        .height(MAP_CONTROL_SIZE)
+        .borderRadius(24)
+        .border({ width: 1, color: $r('sys.color.indicator_border_color') })
+        .backgroundBlurStyle(BlurStyle.Thin, { colorMode: ThemeColorMode.SYSTEM })
+        .onClick(() => {
+          this.toggleMap3DMode();
+        })
       }
-      .width(MAP_CONTROL_SIZE)
-      .height(MAP_CONTROL_SIZE)
-      .borderRadius(24)
-      .border({ width: 1, color: $r('sys.color.indicator_border_color') })
-      .backgroundBlurStyle(BlurStyle.Thin, { colorMode: ThemeColorMode.SYSTEM })
-      .onClick(() => {
-        this.toggleMap3DMode();
-      })
 
       this.buildMapControlButton($r('sys.symbol.satellite_map_fill'), undefined, this.isLayerSheetShown, () => {
         this.openLayerSheet();
@@ -1076,6 +1178,7 @@ export struct MapTab {
     }
     .width(MAP_CONTROL_SIZE)
     .position({ x: this.mapControlsX(), y: this.mapControlsY() })
+    .animation({ duration: 300, curve: Curve.EaseOut })
     .zIndex(2)
   }
 
@@ -1105,14 +1208,35 @@ export struct MapTab {
     })
   }
 
-  /** 图层选择半模态内容：四个图层选项列表 */
+  /** 图层选择半模态内容：三列网格，选中项图片加边框 */
   @Builder
   buildLayerSheetContent() {
-    Column({ space: 8 }) {
+    Grid() {
       ForEach(MAP_LAYER_OPTIONS, (option: MapLayerOption) => {
-        this.buildLayerOption(option)
+        GridItem() {
+          Column({ space: 8 }) {
+            Image(option.thumbnail)
+              .width(80)
+              .height(80)
+              .borderRadius(16)
+              .objectFit(ImageFit.Cover)
+              .border({
+                width: this.selectedMapType === option.mapType ? 3 : 0,
+                color: '#00A991'
+              })
+              .onClick(() => {
+                this.selectMapLayer(option);
+              })
+            Text(option.title)
+              .fontSize(12)
+              .fontColor($r('sys.color.ohos_id_color_text_secondary'))
+          }
+        }
       }, (option: MapLayerOption) => option.title)
     }
+    .columnsTemplate('1fr 1fr 1fr')
+    .columnsGap(12)
+    .rowsGap(12)
     .width('100%')
     .padding({
       left: 16,
@@ -1122,216 +1246,10 @@ export struct MapTab {
     })
   }
 
-  /** 单个图层选项：缩略图+标题+副标题，选中项高亮显示边框和"已选"标签 */
-  @Builder
-  buildLayerOption(option: MapLayerOption) {
-    Row({ space: 12 }) {
-      Image(option.thumbnail)
-        .width(56)
-        .height(56)
-        .borderRadius(12)
-        .objectFit(ImageFit.Cover)
-
-      Column({ space: 4 }) {
-        Text(option.title)
-          .fontSize(16)
-          .fontWeight(FontWeight.Medium)
-          .fontColor($r('sys.color.ohos_id_color_text_primary'))
-        Text(option.subtitle)
-          .fontSize(12)
-          .fontColor($r('sys.color.ohos_id_color_text_secondary'))
-      }
-      .layoutWeight(1)
-      .alignItems(HorizontalAlign.Start)
-
-      if (this.selectedMapType === option.mapType) {
-        Text('已选')
-          .fontSize(12)
-          .fontColor('#00A991')
-          .fontWeight(FontWeight.Medium)
-      }
-    }
-    .width('100%')
-    .padding({
-      left: 14,
-      right: 14,
-      top: 12,
-      bottom: 12
-    })
-    .borderRadius(16)
-    .border({
-      width: this.selectedMapType === option.mapType ? 2 : 1,
-      color: this.selectedMapType === option.mapType ? '#00A991' : $r('sys.color.indicator_border_color')
-    })
-    .backgroundColor(this.selectedMapType === option.mapType ?
-      'rgba(0,169,145,0.10)' : $r('sys.color.comp_background_secondary'))
-    .onClick(() => {
-      this.selectMapLayer(option);
-    })
-  }
-
-  /** 坐标信息半模态内容：未运动时播放按钮居中 + 右侧切换器；运动中显示数据面板 */
+  /** 坐标信息半模态内容：运动中显示数据面板 */
   @Builder
   buildSheetContent() {
-    Stack({ alignContent: Alignment.Center }) {
-      if (this.isWorkoutStarted) {
-        Column() {
-
-        }
-
-        Flex() {
-          SymbolGlyph($r('sys.symbol.pause_circle_fill'))
-            .fontSize(80)
-            .fontColor(['#60C25A'])
-            .onClick(() => {
-              this.startTracking();
-            })
-        }
-      } else {
-        SymbolGlyph($r(this.isWorkoutStarted ? 'sys.symbol.pause_circle_fill' : 'sys.symbol.play_circle_fill'))
-          .fontSize(80)
-          .fontColor(['#60C25A'])
-          .onClick(() => {
-            this.startTracking();
-          })
-      }
-
-
-      Row() {
-        Blank()
-        this.buildSportSwitcher()
-      }
-      .width('100%')
-      .height('100%')
-      .borderRadius(24)
-      .padding({ right: 12 })
-      .alignItems(VerticalAlign.Center)
-      .justifyContent(FlexAlign.End)
-      .hitTestBehavior(HitTestMode.Transparent)
-    }
-    .width('100%')
-    .height('100%')
-    .padding({
-      left: 12,
-      right: 12,
-      top: 12,
-      bottom: this.bottomInset
-    })
-
-    // if (this.isWorkoutStarted) {
-    //   this.buildWorkoutSheetContent()
-    // } else {
-    //
-    // }
-  }
-
-  /** 左侧运动类型详情卡片：图标 + 名称 + 描述 */
-  @Builder
-  buildSportContent(option: SportTypeOption) {
-    Row({ space: 16 }) {
-      Stack({ alignContent: Alignment.Center }) {
-        SymbolGlyph(option.icon)
-          .fontSize(30)
-          .fontColor(['#00A991'])
-      }
-      .width(60)
-      .height(60)
-      .borderRadius(16)
-      .backgroundColor('rgba(0,169,145,0.10)')
-
-      Column({ space: 6 }) {
-        Text(option.label)
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .fontColor($r('sys.color.ohos_id_color_text_primary'))
-        Text(option.desc)
-          .fontSize(14)
-          .fontColor($r('sys.color.ohos_id_color_text_secondary'))
-      }
-      .layoutWeight(1)
-      .alignItems(HorizontalAlign.Start)
-    }
-    .width('100%')
-    .padding({
-      left: 20,
-      right: 20,
-      top: 18,
-      bottom: 18
-    })
-    .borderRadius(20)
-    .backgroundColor($r('sys.color.comp_background_secondary'))
-  }
-
-  /** 右侧运动类型切换器：竖直排列图标，点击切换运动类型 */
-  @Builder
-  buildSportSwitcher() {
-    Column({ space: 3 }) {
-      ForEach(SPORT_TYPE_OPTIONS, (option: SportTypeOption, index?: number) => {
-        Flex({ justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
-          SymbolGlyph(option.icon)
-            .fontSize(28)
-            .fontColor([this.selectedSportIndex === index ? '#60C25A' : '#8B9499'])
-        }
-        .width(40)
-        .height(40)
-        .borderRadius(20)
-        .shadow(this.selectedSportIndex === index ?
-          { radius: 20, color: 'rgba(0,0,0,0.08)', offsetY: 5 } :
-          { radius: 0, color: 'rgba(0,0,0,0.08)', offsetY: 0 })
-        .animation({ duration: 250, curve: Curve.EaseOut })
-        .onClick(() => {
-          if (index !== undefined) {
-            this.selectedSportIndex = index;
-          }
-        })
-      }, (option: SportTypeOption, index?: number) => `${index}`)
-    }
-    .border({ width: 1, color: $r('sys.color.indicator_border_color') })
-    .backgroundBlurStyle(BlurStyle.Thin, { colorMode: ThemeColorMode.SYSTEM })
-    .borderRadius(24)
-    .padding({
-      left: 2,
-      right: 2,
-      top: 2,
-      bottom: 2
-    })
-  }
-
-  /** 初始半模态：左侧运动类型，右侧开始运动 */
-  @Builder
-  buildReadySheetContent() {
-    Row({ space: 20 }) {
-      Column({ space: 6 }) {
-        this.buildSportGauge()
-        Text('上下滑动切换')
-          .fontSize(11)
-          .fontColor('#8B9499')
-      }
-      .width(96)
-      .alignItems(HorizontalAlign.Center)
-
-      Button('开始运动')
-        .fontSize(18)
-        .fontWeight(FontWeight.Bold)
-        .fontColor(Color.White)
-        .height(68)
-        .layoutWeight(1)
-        .borderRadius(34)
-        .backgroundColor(this.isGpsLocked ? '#60C25A' : '#496F45')
-        .enabled(this.isGpsLocked)
-        .onClick(() => {
-          this.startTracking();
-        })
-    }
-    .width('100%')
-    .height('100%')
-    .alignItems(VerticalAlign.Center)
-    .padding({
-      left: 24,
-      right: 24,
-      top: 14,
-      bottom: this.bottomInset + 14
-    })
+    this.buildWorkoutSheetContent()
   }
 
   /** 运动中半模态：数据显示 + 锁定/继续/暂停/声音 */

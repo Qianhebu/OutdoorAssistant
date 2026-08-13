@@ -84,7 +84,7 @@ export struct HomeView {
     .barHeight(64)
     .barFloatingStyle({
       barWidth: { smallWidth: 200, mediumWidth: 300, largeWidth: 400 },
-      barBottomMargin: 28,
+      barBottomMargin: this.bottomInset,
       gradientMask: { maskColor: '#00000000' },
       systemMaterialEffect: {
         materialType: hdsMaterial.MaterialType.IMMERSIVE,
