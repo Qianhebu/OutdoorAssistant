@@ -247,7 +247,7 @@ struct SearchPage {
 
               Text(item.tag)
                 .fontSize(12)
-                .fontColor('#00A991')
+                .fontColor($r('app.color.brand_green'))
                 .padding({
                   left: 8,
                   right: 8,
@@ -370,7 +370,7 @@ struct SearchPage {
             Text(`${index + 1}`)
               .fontSize(16)
               .fontWeight(FontWeight.Bold)
-              .fontColor(index < 3 ? '#00A991' : $r('sys.color.ohos_id_color_text_secondary'))
+              .fontColor(index < 3 ? $r('app.color.brand_green') : $r('sys.color.ohos_id_color_text_secondary'))
               .width(24)
               .textAlign(TextAlign.Center)
 

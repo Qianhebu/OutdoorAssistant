@@ -335,7 +335,7 @@ struct RouteDetailPage {
                 .width(index === this.currentPhotoIndex ? 40 : 30)
                 .height(2)
                 .borderRadius(1)
-                .backgroundColor(index === this.currentPhotoIndex ? '#00A991' : 'rgba(0,0,0,0.18)')
+                .backgroundColor(index === this.currentPhotoIndex ? $r('app.color.brand_green') : 'rgba(0,0,0,0.18)')
             }, (_photo: string, index: number) => `${this.params!.route.id}_indicator_${index}`)
           }
           .width('100%')
@@ -390,7 +390,7 @@ struct RouteDetailPage {
         Column() {
           SymbolGlyph($r('sys.symbol.mountain_2_fill'))
             .fontSize(48)
-            .fontColor(['#FFFFFF'])
+            .fontColor([$r('app.color.white')])
         }
         .width('100%')
         .height(this.heroHeight)
@@ -413,7 +413,7 @@ struct RouteDetailPage {
     Row({ space: 8 }) {
       Text(this.params!.route.difficulty)
         .fontSize(13)
-        .fontColor(getDifficultyColor(this.params!.route.difficulty))
+        .fontColor($r('sys.color.font_on_primary'))
         .fontWeight(FontWeight.Bold)
         .padding({
           left: 12,
@@ -422,7 +422,8 @@ struct RouteDetailPage {
           bottom: 6
         })
         .borderRadius(16)
-        .border({ width: 1, color: $r('sys.color.indicator_border_color') })
+        .border({ width: 1, color: getDifficultyColor(this.params!.route.difficulty) })
+        .backgroundColor(getDifficultyColor(this.params!.route.difficulty))
         .backgroundBlurStyle(BlurStyle.Thin, { colorMode: ThemeColorMode.SYSTEM })
 
       Text(this.params!.route.altitudeRange)

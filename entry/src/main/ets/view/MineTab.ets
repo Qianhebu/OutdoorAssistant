@@ -316,7 +316,7 @@ struct MineTabContent {
       } else {
         SymbolGlyph($r('sys.symbol.boy'))
           .fontSize(48)
-          .fontColor(['#00A991'])
+          .fontColor([$r('app.color.brand_green')])
       }
 
       Column({ space: 4 }) {
@@ -475,7 +475,7 @@ struct AccountSheetContent {
       } else {
         SymbolGlyph($r('sys.symbol.person_crop_circle_fill'))
           .fontSize(64)
-          .fontColor(['#00A991'])
+          .fontColor([$r('app.color.brand_green')])
       }
       Text(this.nickname)
         .fontSize(18)

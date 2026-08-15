@@ -3,6 +3,7 @@ export enum AppStorageKeys {
   MAIN_WINDOW = 'mainWindow',
   HOST_CONTEXT = 'hostContext',
   CURRENT_TAB = 'currentTab',
+  PREVIOUS_TAB = 'previousTab',
   TOP_INSET = 'topInset',
   BOTTOM_INSET = 'bottomInset',
   IS_FOREGROUND = 'isForeGround',

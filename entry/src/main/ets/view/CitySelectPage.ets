@@ -527,10 +527,10 @@ export struct CitySelectPage {
       Flex({ justifyContent: FlexAlign.Start, alignItems: ItemAlign.Center }) {
         SymbolGlyph($r('sys.symbol.local_fill'))
           .fontSize(16)
-          .fontColor(['#00A991'])
+          .fontColor([$r('app.color.brand_green')])
         Text(this.relocating ? '定位中...' : (this.currentCity.length > 0 ? this.currentCity : '定位中...'))
           .fontSize(15)
-          .fontColor('#00A991')
+          .fontColor($r('app.color.brand_green'))
           .fontWeight(FontWeight.Medium)
           .margin({ left: 4 })
           .layoutWeight(1)
@@ -564,7 +564,7 @@ export struct CitySelectPage {
         ForEach(this.hotCities, (city: string) => {
           Text(city)
             .fontSize(14)
-            .fontColor(this.currentCity === city ? '#00A991' : $r('sys.color.ohos_id_color_text_primary'))
+            .fontColor(this.currentCity === city ? $r('app.color.brand_green') : $r('sys.color.ohos_id_color_text_primary'))
             .fontWeight(this.currentCity === city ? FontWeight.Medium : FontWeight.Normal)
             .padding({
               left: 12,

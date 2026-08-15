@@ -97,7 +97,6 @@ struct HomeListView {
   @State videoVisibleMap: Record<string, boolean> = {} as Record<string, boolean>;
   /** 路线卡片图片高度（根据屏幕宽度计算） */
   @State cardImageHeight: number = 0;
-
   /** 应用前后台状态 */
   @StorageLink(AppStorageKeys.IS_FOREGROUND) isAppForeground: boolean = true;
   // ===== 私有辅助属性 =====
@@ -111,6 +110,8 @@ struct HomeListView {
   private originBannerHeight: number = 0;
   /** 当前滚动状态，用于判断下拉拉伸/回弹 */
   private currentScrollState: ScrollState = ScrollState.Idle;
+  /** 是否正在执行 Banner 回弹动画 */
+  private isBannerSpringing: boolean = false;
   /** Swiper 控制器 */
   private bannerController: SwiperController = new SwiperController();
   /** 轮播进度定时器 ID */
@@ -128,7 +129,7 @@ struct HomeListView {
       subTitle: '鄞州绿道骑行',
       desc: '14.5km 休闲骑行，城市中的绿色氧吧',
       mediaUrl: $rawfile('image/banner/banner_arkui.png'),
-      themeColor: '#00A991',
+      themeColor: $r('app.color.brand_green'),
       content: '鄞州绿道全长约 14.5 公里，沿河而建，路面平坦宽阔，非常适合休闲骑行。沿途绿树成荫，空气清新，是城市中难得的绿色氧吧。\n\n路线起点位于鄞州公园南门，途经宁南南路、首南东路、日丽中路，最终到达东部新城。全程约需 1-1.5 小时，适合各年龄段骑行爱好者。\n\n骑行装备建议：\n• 城市通勤车或山地车均可\n• 必备头盔和前后车灯\n• 随车携带简易维修工具\n• 夏季注意防晒和补水\n\n沿途设有多处休息驿站和饮水点，补给充足。周末和节假日人流较多，建议错峰出行，注意礼让行人。'
     },
     {
@@ -137,7 +138,7 @@ struct HomeListView {
       subTitle: '一键选购',
       desc: '登山杖、徒步鞋、防晒衣，专业装备推荐',
       mediaUrl: $rawfile('image/banner/banner_enabling_kit.png'),
-      themeColor: '#C7792B',
+      themeColor: $r('app.color.theme_orange'),
       content: '户外装备是安全出行的基础。无论你是初入户外的新手，还是经验丰富的老驴，选对装备都能让你的旅途更加安全舒适。\n\n登山杖推荐：\n• 碳纤维超轻款：重量仅 185g，适合长距离徒步\n• 铝合金三节款：性价比高，耐用可靠\n• 折叠收纳款：便携性好，适合旅行携带\n\n徒步鞋选购要点：\n• 防水透气 GORE-TEX 面料为首选\n• Vibram 大底提供优秀抓地力\n• 中高帮设计保护脚踝\n• 建议买大半码，预留长途肿胀空间\n\n防晒装备清单：\n• UPF50+ 防晒衣：轻薄透气，阻挡 99% 紫外线\n• 宽沿防晒帽：保护面部和颈部\n• 运动防晒霜：SPF50+，防水防汗配方\n• UV400 偏光太阳镜：保护眼睛'
     },
     {
@@ -146,7 +147,7 @@ struct HomeListView {
       subTitle: '从零开始',
       desc: '第一次户外？看这篇就够了',
       mediaUrl: $rawfile('image/banner/banner_quick_start.png'),
-      themeColor: '#5C3D8F',
+      themeColor: $r('app.color.theme_purple'),
       content: '第一次参加户外活动，既兴奋又紧张？别担心，这篇攻略帮你从零开始，安全踏上户外之旅。\n\n出发前准备：\n1. 选择合适的路线：新手建议从 5km 以内的平坦步道开始\n2. 查看天气预报：避免雨天和大风天出行\n3. 告知亲友行程：分享你的路线和预计返回时间\n4. 检查手机电量：充满电并携带充电宝\n\n必备物品清单：\n• 饮用水（至少 1L）和能量零食\n• 防晒霜、帽子和太阳镜\n• 轻便雨衣（以防突发降雨）\n• 基础急救包（创可贴、消毒棉、绷带）\n• 手电筒或头灯\n\n安全须知：\n• 不要独自前往陌生路线\n• 遇到危险及时拨打救援电话\n• 保持手机通讯畅通\n• 留意路标和指示牌，避免迷路\n• 量力而行，不要逞强\n\n记住：安全永远是第一位的。慢慢来，享受户外的美好！'
     }
   ];
@@ -282,13 +283,10 @@ struct HomeListView {
     this.cardImageHeight = (deviceWidth - 24) / 1.5;
   }
 
-  /** 滚动时处理：回到顶部触发回弹、切换状态栏颜色 */
+  /** 滚动时处理：切换状态栏颜色（回弹由 calculateBannerHeight/onScrollStop 触发） */
   private handleHomeScroll(): void {
     const offset = this.scroller.currentOffset();
     const yOffset = offset?.yOffset ?? 0;
-    if (yOffset === 0 && this.currentScrollState === ScrollState.Scroll) {
-      this.bannerSpringBack();
-    }
     updateStatusBarContentColor(yOffset < STATUS_BAR_LIGHT_THRESHOLD);
   }
 
@@ -306,16 +304,18 @@ struct HomeListView {
     }
     if (state === ScrollState.Scroll && offset !== 0) {
       this.currentScrollState = ScrollState.Scroll;
+      this.isBannerSpringing = false;
       const currentBannerHeight: number = this.bannerHeight - offset;
       if (currentBannerHeight < this.originBannerHeight) {
-        this.currentScrollState = ScrollState.Fling;
         this.bannerHeight = this.originBannerHeight;
         return false;
       }
       const bannerOffset: number = -(offset / BANNER_SCALE_FACTOR);
       this.bannerHeight += bannerOffset;
       return true;
-    } else if (this.currentScrollState === ScrollState.Scroll && state === ScrollState.Fling) {
+    } else if (this.currentScrollState === ScrollState.Scroll &&
+      (state === ScrollState.Fling || state === ScrollState.Idle) &&
+      !this.isBannerSpringing) {
       this.bannerSpringBack();
       return true;
     }
@@ -325,7 +325,15 @@ struct HomeListView {
   /** Banner 高度弹簧回弹到原始高度 */
   private bannerSpringBack(): void {
     this.currentScrollState = ScrollState.Fling;
-    this.getUIContext().animateTo({ curve: Curve.EaseOut, duration: 250 }, () => {
+    this.isBannerSpringing = true;
+    this.getUIContext().animateTo({
+      curve: Curve.EaseOut,
+      duration: 250,
+      onFinish: () => {
+        this.isBannerSpringing = false;
+        this.currentScrollState = ScrollState.Idle;
+      }
+    }, () => {
       this.bannerHeight = this.originBannerHeight;
     });
     // 回弹动画完成后回到 Banner 顶部区域，同步状态栏为白色
@@ -523,7 +531,7 @@ struct HomeListView {
               LoadingProgress()
                 .width(20)
                 .height(20)
-                .color('#00A991')
+                .color($r('app.color.brand_green'))
               Text('加载更多路线...')
                 .fontSize(13)
                 .fontColor($r('sys.color.font_secondary'))
@@ -583,9 +591,12 @@ struct HomeListView {
       .onDidScroll(() => {
         this.handleHomeScroll();
       })
-      // 滚动停止（含回弹动画结束）：重新同步状态栏颜色
+      // 滚动停止（含回弹动画结束）：同步状态栏颜色 + 兜底触发 Banner 回弹
       .onScrollStop(() => {
         const yOffset: number = this.scroller.currentOffset()?.yOffset ?? 0;
+        if (yOffset <= 0 && this.bannerHeight > this.originBannerHeight && !this.isBannerSpringing) {
+          this.bannerSpringBack();
+        }
         updateStatusBarContentColor(yOffset < STATUS_BAR_LIGHT_THRESHOLD);
       })
       // 滚动到底部：延迟加载更多路线
@@ -613,12 +624,12 @@ struct HomeListView {
         }
       },
       style: {
-        // 滚动时导航栏背景模糊效果参数
+        // 滚动时导航栏背景模糊效果参数（基于 Banner 原始高度，避免拉伸/回弹时标题栏闪烁）
         scrollEffectOpts: {
           enableScrollEffect: true,
           scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
-          blurEffectiveStartOffset: LengthMetrics.vp(this.bannerHeight - BANNER_CONTENT_HEIGHT - this.topInset),
-          blurEffectiveEndOffset: LengthMetrics.vp(this.bannerHeight - this.topInset - NAVIGATION_HEIGHT)
+          blurEffectiveStartOffset: LengthMetrics.vp(this.originBannerHeight - BANNER_CONTENT_HEIGHT - this.topInset),
+          blurEffectiveEndOffset: LengthMetrics.vp(this.originBannerHeight - this.topInset - NAVIGATION_HEIGHT)
         },
         // 未滚动时导航栏样式
         originalStyle: {
@@ -864,7 +875,7 @@ struct HomeListView {
           Column() {
             SymbolGlyph($r('sys.symbol.mountain_2_fill'))
               .fontSize(40)
-              .fontColor(['#FFFFFF'])
+              .fontColor([$r('app.color.white')])
           }
           .width('100%')
           .height(this.cardImageHeight)
@@ -940,7 +951,7 @@ struct HomeListView {
           }
 
           Row({ space: 5 }) {
-            SymbolGlyph($r('sys.symbol.soaring_time_fill'))
+            SymbolGlyph($r('sys.symbol.max_slope'))
               .fontSize(15)
               .fontColor([$r('sys.color.icon_secondary')])
             Text(`${route.elevationGainMeters}m`)

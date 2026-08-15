@@ -11,6 +11,7 @@ export function updateStatusBarContentColor(isLightBackground: boolean): void {
     AppStorage.get<ConfigurationConstant.ColorMode>(AppStorageKeys.COLOR_MODE) ??
       ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
   const isDark: boolean = colorMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
+  // 状态栏文字颜色：setWindowSystemBarProperties 仅接受 string 色值
   const color: string = isLightBackground || isDark ? '#FFFFFF' : '#000000';
   const mainWindow = AppStorage.get<window.Window>(AppStorageKeys.MAIN_WINDOW);
   mainWindow?.setWindowSystemBarProperties({

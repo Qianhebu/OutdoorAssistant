@@ -37,6 +37,7 @@ export struct HomeView {
     }
     this.currentIndex = index;
     AppStorage.setOrCreate(AppStorageKeys.CURRENT_TAB, index);
+    AppStorage.setOrCreate(AppStorageKeys.PREVIOUS_TAB, this.previousTabIndex);
     if (index === OutdoorTabType.HOME) {
       const offset = this.homeScroller.currentOffset();
       updateStatusBarContentColor((offset?.yOffset ?? 0) < STATUS_BAR_LIGHT_THRESHOLD);
@@ -81,11 +82,11 @@ export struct HomeView {
     .vertical(false)
     .scrollable(false)
     .divider({ mode: DividerMode.NONE })
-    .barHeight(64)
+    .barHeight(this.currentIndex === OutdoorTabType.RECORD ? 0 : 64)
     .barFloatingStyle({
       barWidth: { smallWidth: 200, mediumWidth: 300, largeWidth: 400 },
       barBottomMargin: this.bottomInset,
-      gradientMask: { maskColor: '#00000000' },
+      gradientMask: { maskColor: $r('app.color.transparent') },
       systemMaterialEffect: {
         materialType: hdsMaterial.MaterialType.IMMERSIVE,
         materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE
@@ -108,11 +109,11 @@ export struct HomeView {
       normal: new SymbolGlyphModifier(tabItem.icon)
         .fontColor([$r('sys.color.ohos_id_color_text_secondary')]),
       selected: new SymbolGlyphModifier(tabItem.icon)
-        .fontColor(['#00A991'])
+        .fontColor([$r('app.color.brand_green')])
     }, tabItem.title)
       .labelStyle({
         unselectedColor: $r('sys.color.ohos_id_color_text_secondary'),
-        selectedColor: '#00A991'
+        selectedColor: $r('app.color.brand_green')
       })
   }
 }

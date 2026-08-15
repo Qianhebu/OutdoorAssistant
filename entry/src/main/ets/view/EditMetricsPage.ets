@@ -122,7 +122,7 @@ export struct EditMetricsPage {
       Text('保存')
         .fontSize(16)
         .fontWeight(FontWeight.Medium)
-        .fontColor('#00A991')
+        .fontColor($r('app.color.brand_green'))
         .padding({ left: 20, right: 20 })
         .onClick(() => {
           this.saveMetrics();
@@ -140,7 +140,7 @@ export struct EditMetricsPage {
       Column() {
         SymbolGlyph(metric.icon)
           .fontSize(20)
-          .fontColor([this.isSelected(metric.key) ? '#00A991' : '#999999'])
+          .fontColor([this.isSelected(metric.key) ? $r('app.color.brand_green') : $r('app.color.text_disabled')])
       }
       .width(40)
       .height(40)
@@ -175,7 +175,7 @@ export struct EditMetricsPage {
         .height(20)
         .justifyContent(FlexAlign.Center)
         .alignItems(HorizontalAlign.Center)
-        .backgroundColor('#00A991')
+        .backgroundColor($r('app.color.brand_green'))
         .borderRadius(10)
       }
     }
@@ -187,7 +187,7 @@ export struct EditMetricsPage {
     .borderRadius(16)
     .border({
       width: 1,
-      color: this.isSelected(metric.key) ? '#00A991' : $r('sys.color.comp_divider')
+      color: this.isSelected(metric.key) ? $r('app.color.brand_green') : $r('sys.color.comp_divider')
     })
     .onClick(() => {
       this.toggleMetric(metric.key);

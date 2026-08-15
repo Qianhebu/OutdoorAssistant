@@ -15,6 +15,114 @@
     {
       "name": "location_permission_reason",
       "value": "用于户外路线导航、轨迹记录和位置推荐，提供更精准的户外服务"
+    },
+    {
+      "name": "background_location_permission_reason",
+      "value": "用于关闭应用后继续记录运动轨迹和位置信息"
+    },
+    {
+      "name": "locating",
+      "value": "正在定位…"
+    },
+    {
+      "name": "searching_gnss",
+      "value": "正在搜索..."
+    },
+    {
+      "name": "layer_sheet_title",
+      "value": "选择地图图层"
+    },
+    {
+      "name": "metric_sheet_title",
+      "value": "显示数据配置"
+    },
+    {
+      "name": "long_press_end",
+      "value": "长按结束"
+    },
+    {
+      "name": "end_workout",
+      "value": "结束运动"
+    },
+    {
+      "name": "continue_workout",
+      "value": "继续运动"
+    },
+    {
+      "name": "short_distance_confirm",
+      "value": "本次运动距离过短，将不会记录数据。是否结束？"
+    },
+    {
+      "name": "switch_sport",
+      "value": "切换运动类型"
+    },
+    {
+      "name": "voice_started",
+      "value": "已开启"
+    },
+    {
+      "name": "voice_paused",
+      "value": "已暂停"
+    },
+    {
+      "name": "voice_resumed",
+      "value": "已恢复"
+    },
+    {
+      "name": "notify_workout_ing",
+      "value": "中 · "
+    },
+    {
+      "name": "notify_click_back",
+      "value": "点击回到运动记录"
+    },
+    {
+      "name": "metric_max_warning",
+      "value": "最多选择 %d 项，请先关闭其他指标后再开启"
+    },
+    {
+      "name": "weather_warning_confirm",
+      "value": "仍要继续"
+    },
+    {
+      "name": "weather_warning_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "location_disabled",
+      "value": "请先在系统设置中开启位置服务"
+    },
+    {
+      "name": "activity_motion_permission_reason",
+      "value": "用于检测运动步数变化，判断运动是否真实发生，提升运动数据准确性"
+    },
+    {
+      "name": "fake_motion_warning",
+      "value": "未检测到步数变化，当前位移可能来自交通工具，运动数据可能不准确"
+    },
+    {
+      "name": "generating_video",
+      "value": "正在生成轨迹视频…"
+    },
+    {
+      "name": "video_saved",
+      "value": "轨迹视频已保存"
+    },
+    {
+      "name": "video_save_failed",
+      "value": "轨迹视频保存失败"
+    },
+    {
+      "name": "generate_video",
+      "value": "轨迹回放"
+    },
+    {
+      "name": "replaying",
+      "value": "回放中"
+    },
+    {
+      "name": "replay_again",
+      "value": "重新播放"
     }
   ]
 }

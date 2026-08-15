@@ -15,6 +15,110 @@
     {
       "name": "dot_color_dark",
       "value": "#374151"
+    },
+    {
+      "name": "brand_green",
+      "value": "#00A991"
+    },
+    {
+      "name": "action_green",
+      "value": "#60C25A"
+    },
+    {
+      "name": "action_red",
+      "value": "#F04F57"
+    },
+    {
+      "name": "icon_gray",
+      "value": "#8B9499"
+    },
+    {
+      "name": "text_disabled",
+      "value": "#999999"
+    },
+    {
+      "name": "white",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "black",
+      "value": "#000000"
+    },
+    {
+      "name": "transparent",
+      "value": "#00000000"
+    },
+    {
+      "name": "theme_purple",
+      "value": "#5C3D8F"
+    },
+    {
+      "name": "theme_orange",
+      "value": "#C7792B"
+    },
+    {
+      "name": "accent_easy",
+      "value": "#2E7D32"
+    },
+    {
+      "name": "accent_medium",
+      "value": "#E65100"
+    },
+    {
+      "name": "accent_hard",
+      "value": "#C62828"
+    },
+    {
+      "name": "accent_veryhard",
+      "value": "#6A1B9A"
+    },
+    {
+      "name": "accent_default",
+      "value": "#424242"
+    },
+    {
+      "name": "sub_easy",
+      "value": "#C8E6C9"
+    },
+    {
+      "name": "sub_medium",
+      "value": "#FFE0B2"
+    },
+    {
+      "name": "sub_hard",
+      "value": "#FFCDD2"
+    },
+    {
+      "name": "sub_veryhard",
+      "value": "#E1BEE7"
+    },
+    {
+      "name": "sub_default",
+      "value": "#EEEEEE"
+    },
+    {
+      "name": "difficulty_easy",
+      "value": "#4CAF50"
+    },
+    {
+      "name": "difficulty_hard",
+      "value": "#F44336"
+    },
+    {
+      "name": "difficulty_veryhard",
+      "value": "#9C27B0"
+    },
+    {
+      "name": "difficulty_unknown",
+      "value": "#9E9E9E"
+    },
+    {
+      "name": "warning_red",
+      "value": "#E84026"
+    },
+    {
+      "name": "warning_orange",
+      "value": "#E6A23C"
     }
   ]
 }

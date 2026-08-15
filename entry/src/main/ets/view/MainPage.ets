@@ -4,6 +4,7 @@ import { promptAction } from '@kit.ArkUI';
 import { HdsNavDestination } from '@kit.UIDesignKit';
 import { AppStorageKeys } from '../constant/AppStorageKeys';
 import { OutdoorTabType } from '../model/TabBarModel';
+import { updateStatusBarContentColor } from '../utils/SystemBarHelper';
 import { HomeView } from './HomeView';
 
 const BACK_PRESS_INTERVAL = 1500;
@@ -28,6 +29,21 @@ struct MainPage {
   }
 
   private handleBackPress(): boolean {
+    // 记录 Tab（地图页）侧滑/返回键：切回上一个 Tab 而非退出应用
+    const currentTab: number = AppStorage.get<number>(AppStorageKeys.CURRENT_TAB) ?? OutdoorTabType.HOME;
+    if (currentTab === OutdoorTabType.RECORD) {
+      const previousTab: number = AppStorage.get<number>(AppStorageKeys.PREVIOUS_TAB) ?? OutdoorTabType.HOME;
+      const target: number =
+        previousTab === OutdoorTabType.RECORD ? OutdoorTabType.HOME : previousTab;
+      this.currentIndex = target;
+      AppStorage.setOrCreate(AppStorageKeys.CURRENT_TAB, target);
+      if (target === OutdoorTabType.HOME) {
+        updateStatusBarContentColor(true);
+      } else {
+        updateStatusBarContentColor(false);
+      }
+      return true;
+    }
     const now = Date.now();
     if (this.backPressTime > 0 && now - this.backPressTime < BACK_PRESS_INTERVAL) {
       const context = this.getUIContext().getHostContext() as common.UIAbilityContext;

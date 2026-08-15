@@ -19,36 +19,36 @@ export interface HikingRouteItem {
   waypointCount: number
 }
 
-export function getCardAccentColor(route: HikingRouteItem): string {
+export function getCardAccentColor(route: HikingRouteItem): Resource {
   if (route.difficulty === '简单') {
-    return '#2E7D32'
+    return $r('app.color.accent_easy')
   }
   if (route.difficulty === '中等') {
-    return '#E65100'
+    return $r('app.color.accent_medium')
   }
   if (route.difficulty === '较难') {
-    return '#C62828'
+    return $r('app.color.accent_hard')
   }
   if (route.difficulty === '困难') {
-    return '#6A1B9A'
+    return $r('app.color.accent_veryhard')
   }
-  return '#424242'
+  return $r('app.color.accent_default')
 }
 
-export function getCardSubColor(route: HikingRouteItem): string {
+export function getCardSubColor(route: HikingRouteItem): Resource {
   if (route.difficulty === '简单') {
-    return '#C8E6C9'
+    return $r('app.color.sub_easy')
   }
   if (route.difficulty === '中等') {
-    return '#FFE0B2'
+    return $r('app.color.sub_medium')
   }
   if (route.difficulty === '较难') {
-    return '#FFCDD2'
+    return $r('app.color.sub_hard')
   }
   if (route.difficulty === '困难') {
-    return '#E1BEE7'
+    return $r('app.color.sub_veryhard')
   }
-  return '#EEEEEE'
+  return $r('app.color.sub_default')
 }
 
 interface HikingRouteListData {
@@ -62,18 +62,18 @@ export interface HikingRouteResponse {
   data: HikingRouteListData
 }
 
-export function getDifficultyColor(difficulty: string): string {
+export function getDifficultyColor(difficulty: string): Resource {
   if (difficulty === '简单') {
-    return '#4CAF50'
+    return $r('app.color.difficulty_easy')
   }
   if (difficulty === '中等') {
-    return '#FF9800'
+    return $r('sys.color.ohos_id_color_palette10')
   }
   if (difficulty === '较难') {
-    return '#F44336'
+    return $r('app.color.difficulty_hard')
   }
   if (difficulty === '困难') {
-    return '#9C27B0'
+    return $r('app.color.difficulty_veryhard')
   }
-  return '#9E9E9E'
+  return $r('app.color.difficulty_unknown')
 }
