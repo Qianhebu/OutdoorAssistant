@@ -346,49 +346,8 @@ struct RouteDetailPage {
           .alignItems(VerticalAlign.Center)
           .backgroundColor($r('app.color.start_window_background'))
         }
-      } else if (this.params!.route.videoUrl.length > 0) {
-        Stack({ alignContent: Alignment.BottomEnd }) {
-          Video({
-            src: $rawfile(this.params!.route.videoUrl),
-            controller: this.videoController
-          })
-            .width('100%')
-            .height('100%')
-            .autoPlay(true)
-            .loop(true)
-            .muted(this.videoMuted)
-            .controls(false)
-            .objectFit(ImageFit.Cover)
-            .onPrepared(() => {
-              this.updateHeroHeightByVideoMetadata(this.params!.route.videoUrl);
-            })
-
-          Row() {
-            if (this.videoMuted) {
-              SymbolGlyph($r('sys.symbol.speaker_slash_fill'))
-                .fontSize(18)
-                .fontColor([Color.White])
-            } else {
-              SymbolGlyph($r('sys.symbol.speaker_wave_3_fill'))
-                .fontSize(18)
-                .fontColor([Color.White])
-            }
-          }
-          .width(36)
-          .height(36)
-          .borderRadius(18)
-          .backgroundColor('rgba(0,0,0,0.45)')
-          .justifyContent(FlexAlign.Center)
-          .alignItems(VerticalAlign.Center)
-          .margin({ right: 16, bottom: 16 })
-          .zIndex(2)
-          .onClick(() => {
-            this.videoMuted = !this.videoMuted;
-          })
-        }
-        .width('100%')
-        .height(this.heroHeight)
       } else {
+        // 当前版本不展示视频，视频路线显示渐变占位图
         Column() {
           SymbolGlyph($r('sys.symbol.mountain_2_fill'))
             .fontSize(48)

@@ -12,7 +12,6 @@ import { StorageKey } from '../constant/StorageKey';
 import { PageContext } from '../router/PageContext';
 import { Chip, ChipSize, curves, display, LengthMetrics, promptAction, SymbolGlyphModifier } from '@kit.ArkUI';
 import { image } from '@kit.ImageKit';
-import { media } from '@kit.MediaKit';
 import { abilityAccessCtrl, common, PermissionRequestResult, Permissions } from '@kit.AbilityKit';
 import { geoLocationManager } from '@kit.LocationKit';
 import {
@@ -26,7 +25,6 @@ import { util } from '@kit.ArkTS';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { RouteDetailParam } from './RouteDetailPage';
 import { BannerDetailParam } from './BannerDetailPage';
-import { VideoPlayerView } from './VideoPlayerView';
 import { updateStatusBarContentColor } from '../utils/SystemBarHelper';
 import { saveCurrentLocation } from '../utils/LocationStore';
 
@@ -93,16 +91,8 @@ struct HomeListView {
   @State routesLoadingMore: boolean = false;
   /** 是否已全部加载 */
   @State routesAllLoaded: boolean = false;
-  /** 视频静音状态映射：routeId -> muted */
-  @State videoMutedMap: Record<string, boolean> = {} as Record<string, boolean>;
-  /** 视频可见状态映射：routeId -> isVisible */
-  @State videoVisibleMap: Record<string, boolean> = {} as Record<string, boolean>;
   /** 路线卡片图片高度（根据屏幕宽度计算） */
   @State cardImageHeight: number = 0;
-  /** 各路线首媒体真实宽高比（高/宽）缓存，用于卡片与详情按真实比例展示，保证共享元素转场平滑 */
-  @State routeMediaAspects: Record<string, number> = {} as Record<string, number>;
-  /** 应用前后台状态 */
-  @StorageLink(AppStorageKeys.IS_FOREGROUND) isAppForeground: boolean = true;
   // ===== 私有辅助属性 =====
   /** 路线列表每页加载条数 */
   private routesPageSize: number = 8;
@@ -110,8 +100,6 @@ struct HomeListView {
   private routesCurrentPage: number = 0;
   /** 路线列表加载更多防抖定时器 */
   private routesLoadingTimer: number = -1;
-  /** 屏幕宽度（vp），用于按媒体宽高比计算展示高度 */
-  private deviceWidthVp: number = 0;
   /** Banner 原始高度（下拉拉伸恢复基准） */
   private originBannerHeight: number = 0;
   /** 当前滚动状态，用于判断下拉拉伸/回弹 */
@@ -284,7 +272,6 @@ struct HomeListView {
     const uiContext: UIContext = this.getUIContext();
     const displayInfo = display.getDefaultDisplaySync();
     const deviceWidth = uiContext.px2vp(displayInfo.width);
-    this.deviceWidthVp = deviceWidth;
     this.bannerHeight = deviceWidth * 1.28;
     this.originBannerHeight = this.bannerHeight;
     this.cardImageHeight = (deviceWidth - 24) / 1.5;
@@ -393,11 +380,10 @@ struct HomeListView {
   }
 
   /** 跳转路线详情页，使用弹簧曲线转场动画 */
-  private navigateToRouteDetail(route: HikingRouteItem): void {
+  private async navigateToRouteDetail(route: HikingRouteItem): Promise<void> {
     let heroHeight: number = 0;
-    const aspect: number = this.routeMediaAspects[route.id];
-    if (aspect && aspect > 0) {
-      heroHeight = this.deviceWidthVp * aspect;
+    if (route.photos.length > 0) {
+      heroHeight = await this.resolvePhotoHeroHeight(route.photos[0]);
     }
     const param: RouteDetailParam = {
       route: route,
@@ -411,8 +397,8 @@ struct HomeListView {
     });
   }
 
-  /** 解析图片真实宽高比（高/宽），失败返回 0 */
-  private async resolvePhotoAspect(photoPath: string): Promise<number> {
+  /** 解析首图真实宽高比对应的全屏高度（vp），供详情页 hero 在转场开始时即锁定目标帧 */
+  private async resolvePhotoHeroHeight(photoPath: string): Promise<number> {
     const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
     let source: image.ImageSource | undefined = undefined;
     try {
@@ -424,7 +410,10 @@ struct HomeListView {
       if (!info || !info.size || info.size.width <= 0 || info.size.height <= 0) {
         return 0;
       }
-      return info.size.height / info.size.width;
+      const displayInfo = display.getDefaultDisplaySync();
+      const uiContext = this.getUIContext();
+      const deviceWidthVp: number = uiContext.px2vp(displayInfo.width);
+      return deviceWidthVp * info.size.height / info.size.width;
     } catch (err) {
       return 0;
     } finally {
@@ -436,120 +425,6 @@ struct HomeListView {
       }
     }
   }
-
-  /** 解析视频真实宽高比（高/宽，含旋转角校正），失败返回 0 */
-  private async resolveVideoAspect(videoUrl: string): Promise<number> {
-    const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-    let extractor: media.AVMetadataExtractor | undefined = undefined;
-    let rawFdOpened: boolean = false;
-    try {
-      const rawFileDescriptor = context.resourceManager.getRawFdSync(videoUrl);
-      rawFdOpened = true;
-      extractor = await media.createAVMetadataExtractor();
-      extractor.fdSrc = {
-        fd: rawFileDescriptor.fd,
-        offset: rawFileDescriptor.offset,
-        length: rawFileDescriptor.length
-      };
-      const metadata = await extractor.fetchMetadata();
-      let videoWidth = Number(metadata.videoWidth);
-      let videoHeight = Number(metadata.videoHeight);
-      const videoOrientation = Number(metadata.videoOrientation ?? '0');
-      if (videoWidth <= 0 || videoHeight <= 0) {
-        return 0;
-      }
-      if (videoOrientation === 90 || videoOrientation === 270) {
-        const displayWidth = videoHeight;
-        videoHeight = videoWidth;
-        videoWidth = displayWidth;
-      }
-      return videoHeight / videoWidth;
-    } catch (err) {
-      return 0;
-    } finally {
-      try {
-        await extractor?.release();
-      } catch (err) {
-      }
-      if (rawFdOpened) {
-        try {
-          await context.resourceManager.closeRawFd(videoUrl);
-        } catch (err) {
-        }
-      }
-    }
-  }
-
-  /** 预计算全部路线首媒体宽高比，首页卡片与详情 hero 均按真实比例展示 */
-  private async precomputeRouteMediaAspects(): Promise<void> {
-    const aspects: Record<string, number> = {} as Record<string, number>;
-    for (let i = 0; i < this.allRoutes.length; i++) {
-      const route = this.allRoutes[i];
-      if (route.photos.length > 0) {
-        aspects[route.id] = await this.resolvePhotoAspect(route.photos[0]);
-      } else if (route.videoUrl.length > 0) {
-        aspects[route.id] = await this.resolveVideoAspect(route.videoUrl);
-      }
-    }
-    this.routeMediaAspects = aspects;
-  }
-
-  /** 卡片媒体区高度（vp）：按首媒体真实宽高比计算，未解析时回退默认高度 */
-  private mediaAreaHeight(route: HikingRouteItem): number {
-    const aspect: number = this.routeMediaAspects[route.id];
-    if (aspect && aspect > 0) {
-      return (this.deviceWidthVp - 24) * aspect;
-    }
-    return this.cardImageHeight;
-  }
-
-  /** 判断路线视频是否静音 */
-  private isVideoMuted(routeId: string): boolean {
-    return this.videoMutedMap[routeId] ?? true;
-  }
-
-  /** 切换路线视频静音状态（同时静音其他视频） */
-  private toggleVideoMute(routeId: string): void {
-    const currentMuted = this.isVideoMuted(routeId);
-    const newMap: Record<string, boolean> = {} as Record<string, boolean>;
-    const keys = Object.keys(this.videoMutedMap);
-    for (let i = 0; i < keys.length; i++) {
-      newMap[keys[i]] = this.videoMutedMap[keys[i]];
-    }
-    if (currentMuted) {
-      for (let i = 0; i < keys.length; i++) {
-        newMap[keys[i]] = true;
-      }
-      newMap[routeId] = false;
-    } else {
-      newMap[routeId] = true;
-    }
-    this.videoMutedMap = newMap;
-  }
-
-  /** 视频进入可视区域：标记可见 */
-  private onVideoVisible(routeId: string): void {
-    const newMap: Record<string, boolean> = {} as Record<string, boolean>;
-    const keys = Object.keys(this.videoVisibleMap);
-    for (let i = 0; i < keys.length; i++) {
-      newMap[keys[i]] = this.videoVisibleMap[keys[i]];
-    }
-    newMap[routeId] = true;
-    this.videoVisibleMap = newMap;
-  }
-
-  /** 视频离开可视区域：标记不可见 */
-  private onVideoInvisible(routeId: string): void {
-    const newMap: Record<string, boolean> = {} as Record<string, boolean>;
-    const keys = Object.keys(this.videoVisibleMap);
-    for (let i = 0; i < keys.length; i++) {
-      newMap[keys[i]] = this.videoVisibleMap[keys[i]];
-    }
-    newMap[routeId] = false;
-    this.videoVisibleMap = newMap;
-  }
-
-  /** 应用前后台切换：shouldPlay prop 自动驱动播放/暂停，无需手动控制 */
 
   /** 从 rawfile 加载全部路线数据 */
   private loadAllRoutes(): void {
@@ -563,7 +438,6 @@ struct HomeListView {
       if (response.code === 0 && response.data && response.data.routes) {
         this.allRoutes = response.data.routes
         this.loadMoreRoutes()
-        this.precomputeRouteMediaAspects()
       }
     } catch (err) {
       const error = err as BusinessError
@@ -625,7 +499,7 @@ struct HomeListView {
             this.buildHikingRouteCard(route)
           }
           .width('100%')
-          .height(this.mediaAreaHeight(route) + 116)
+          .height(this.cardImageHeight + 116)
           .margin({ top: 12 })
           .padding({ left: 12, right: 12 })
         }, (route: HikingRouteItem) => route.id)
@@ -939,7 +813,7 @@ struct HomeListView {
               Image($rawfile(photo))
                 .objectFit(ImageFit.Cover)
                 .width('100%')
-                .height(this.mediaAreaHeight(route))
+                .height(this.cardImageHeight)
             }, (photo: string, index: number) => `${route.id}_${index}`)
           }
           .autoPlay(route.photos.length > 1)
@@ -955,36 +829,17 @@ struct HomeListView {
           .duration(800)
           .itemSpace(0)
           .width('100%')
-          .height(this.mediaAreaHeight(route))
+          .height(this.cardImageHeight)
           .borderRadius({ topLeft: 20, topRight: 20 })
-        } else if (route.videoUrl.length > 0) {
-          VideoPlayerView({
-            videoSrc: route.videoUrl,
-            isMuted: this.isVideoMuted(route.id),
-            shouldPlay: this.isAppForeground && (this.videoVisibleMap[route.id] ?? false),
-            onMuteToggle: () => {
-              this.toggleVideoMute(route.id);
-            }
-          })
-            .width('100%')
-            .height(this.mediaAreaHeight(route))
-            .borderRadius({ topLeft: 20, topRight: 20 })
-            .onVisibleAreaChange([0.0, 0.75], (isVisible: boolean, currentRatio: number) => {
-              if (isVisible && currentRatio >= 0.75) {
-                this.onVideoVisible(route.id);
-              } else if (!isVisible || currentRatio < 0.75) {
-                this.onVideoInvisible(route.id);
-              }
-            })
         } else {
-          // 渐变占位图
+          // 渐变占位图（当前版本不展示视频）
           Column() {
             SymbolGlyph($r('sys.symbol.mountain_2_fill'))
               .fontSize(40)
               .fontColor([$r('app.color.white')])
           }
           .width('100%')
-          .height(this.mediaAreaHeight(route))
+          .height(this.cardImageHeight)
           .justifyContent(FlexAlign.Center)
           .alignItems(HorizontalAlign.Center)
           .linearGradient({
@@ -995,7 +850,7 @@ struct HomeListView {
         }
       }
       .width('100%')
-      .height(this.mediaAreaHeight(route))
+      .height(this.cardImageHeight)
       .borderRadius({ topLeft: 20, topRight: 20 })
       .clip(true)
       .renderGroup(true)
