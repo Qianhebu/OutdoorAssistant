@@ -2,10 +2,10 @@ import type { common } from '@kit.AbilityKit';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { promptAction } from '@kit.ArkUI';
 import { HdsNavDestination } from '@kit.UIDesignKit';
-import { AppStorageKeys } from '../constant/AppStorageKeys';
-import { OutdoorTabType } from '../model/TabBarModel';
-import { updateStatusBarContentColor } from '../utils/SystemBarHelper';
-import { HomeView } from './HomeView';
+import { AppStorageKeys } from '@ohos/common';
+import { OutdoorTabType } from '@ohos/common';
+import { updateStatusBarContentColor } from '@ohos/common';
+import { HomeView } from '@ohos/home';
 
 const BACK_PRESS_INTERVAL = 1500;
 

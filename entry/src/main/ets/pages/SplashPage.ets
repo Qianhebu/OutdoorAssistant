@@ -1,9 +1,9 @@
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { HdsNavigation } from '@kit.UIDesignKit';
-import { AppStorageKeys } from '../constant/AppStorageKeys';
-import { PageEnum } from '../constant/PageEnum';
-import { StorageKey } from '../constant/StorageKey';
-import { PageContext, RouterParam } from '../router/PageContext';
+import { AppStorageKeys } from '@ohos/common';
+import { PageEnum } from '@ohos/common';
+import { StorageKey } from '@ohos/common';
+import { PageContext, RouterParam } from '@ohos/common';
 
 const SPLASH_DURATION = 500;
 

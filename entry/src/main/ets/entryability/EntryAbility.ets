@@ -2,10 +2,10 @@ import { AbilityConstant, Configuration, ConfigurationConstant, UIAbility, Want 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { SafeAreaManager } from '../utils/SafeAreaManager';
-import { AppStorageKeys } from '../constant/AppStorageKeys';
-import { StorageKey } from '../constant/StorageKey';
-import { PageContext } from '../router/PageContext';
+import { SafeAreaManager } from '@ohos/common';
+import { AppStorageKeys } from '@ohos/common';
+import { StorageKey } from '@ohos/common';
+import { PageContext } from '@ohos/common';
 
 
 const DOMAIN = 0x0000;

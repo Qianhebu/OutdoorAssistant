@@ -1,0 +1,9 @@
+{
+  "name": "@ohos/common",
+  "version": "1.0.0",
+  "description": "基础共享模块：常量、数据模型、工具、服务、接口层、公共组件",
+  "main": "Index.ets",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {}
+}

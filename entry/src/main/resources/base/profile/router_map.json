@@ -4,46 +4,6 @@
       "name": "MainPage",
       "pageSourceFile": "src/main/ets/view/MainPage.ets",
       "buildFunction": "MainPageBuilder"
-    },
-    {
-      "name": "HomeListView",
-      "pageSourceFile": "src/main/ets/view/HomeListView.ets",
-      "buildFunction": "HomeListViewBuilder"
-    },
-    {
-      "name": "MineDetail",
-      "pageSourceFile": "src/main/ets/view/MineDetailNavPage.ets",
-      "buildFunction": "MineDetailNavPageBuilder"
-    },
-    {
-      "name": "PrivacyPolicy",
-      "pageSourceFile": "src/main/ets/view/PrivacyPolicyPage.ets",
-      "buildFunction": "PrivacyPolicyBuilder"
-    },
-    {
-      "name": "CitySelect",
-      "pageSourceFile": "src/main/ets/view/CitySelectPage.ets",
-      "buildFunction": "CitySelectPageBuilder"
-    },
-    {
-      "name": "SearchPage",
-      "pageSourceFile": "src/main/ets/view/SearchPage.ets",
-      "buildFunction": "SearchPageBuilder"
-    },
-    {
-      "name": "BannerDetail",
-      "pageSourceFile": "src/main/ets/view/BannerDetailPage.ets",
-      "buildFunction": "BannerDetailPageBuilder"
-    },
-    {
-      "name": "RouteDetail",
-      "pageSourceFile": "src/main/ets/view/RouteDetailPage.ets",
-      "buildFunction": "RouteDetailPageBuilder"
-    },
-    {
-      "name": "RecordMetricsEdit",
-      "pageSourceFile": "src/main/ets/view/EditMetricsPage.ets",
-      "buildFunction": "EditMetricsPageBuilder"
     }
   ]
 }

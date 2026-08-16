@@ -1,0 +1,29 @@
+{
+  "routerMap": [
+    {
+      "name": "HomeListView",
+      "pageSourceFile": "src/main/ets/view/HomeListView.ets",
+      "buildFunction": "HomeListViewBuilder"
+    },
+    {
+      "name": "CitySelect",
+      "pageSourceFile": "src/main/ets/view/CitySelectPage.ets",
+      "buildFunction": "CitySelectPageBuilder"
+    },
+    {
+      "name": "SearchPage",
+      "pageSourceFile": "src/main/ets/view/SearchPage.ets",
+      "buildFunction": "SearchPageBuilder"
+    },
+    {
+      "name": "BannerDetail",
+      "pageSourceFile": "src/main/ets/view/BannerDetailPage.ets",
+      "buildFunction": "BannerDetailPageBuilder"
+    },
+    {
+      "name": "RouteDetail",
+      "pageSourceFile": "src/main/ets/view/RouteDetailPage.ets",
+      "buildFunction": "RouteDetailPageBuilder"
+    }
+  ]
+}

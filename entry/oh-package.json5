@@ -1,10 +1,14 @@
 {
   "name": "entry",
   "version": "1.0.0",
-  "description": "Please describe the basic information.",
+  "description": "产品入口模块：应用装配与启动",
   "main": "",
   "author": "",
   "license": "",
-  "dependencies": {}
+  "dependencies": {
+    "@ohos/common": "file:../common",
+    "@ohos/home": "file:../features/home",
+    "@ohos/map": "file:../features/map",
+    "@ohos/mine": "file:../features/mine"
+  }
 }
-

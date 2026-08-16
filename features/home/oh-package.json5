@@ -1,0 +1,13 @@
+{
+  "name": "@ohos/home",
+  "version": "1.0.0",
+  "description": "首页业务模块：首页、搜索、城市选择、Banner、路线详情",
+  "main": "Index.ets",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@ohos/common": "file:../../common",
+    "@ohos/map": "file:../map",
+    "@ohos/mine": "file:../mine"
+  }
+}

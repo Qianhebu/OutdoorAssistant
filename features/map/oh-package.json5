@@ -1,0 +1,11 @@
+{
+  "name": "@ohos/map",
+  "version": "1.0.0",
+  "description": "地图与运动记录模块",
+  "main": "Index.ets",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@ohos/common": "file:../../common"
+  }
+}

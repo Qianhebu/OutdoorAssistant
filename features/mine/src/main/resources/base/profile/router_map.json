@@ -1,0 +1,19 @@
+{
+  "routerMap": [
+    {
+      "name": "MineDetail",
+      "pageSourceFile": "src/main/ets/view/MineDetailNavPage.ets",
+      "buildFunction": "MineDetailNavPageBuilder"
+    },
+    {
+      "name": "PrivacyPolicy",
+      "pageSourceFile": "src/main/ets/view/PrivacyPolicyPage.ets",
+      "buildFunction": "PrivacyPolicyBuilder"
+    },
+    {
+      "name": "RecordMetricsEdit",
+      "pageSourceFile": "src/main/ets/view/EditMetricsPage.ets",
+      "buildFunction": "EditMetricsPageBuilder"
+    }
+  ]
+}

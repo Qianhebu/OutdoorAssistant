@@ -1,0 +1,11 @@
+{
+  "name": "@ohos/mine",
+  "version": "1.0.0",
+  "description": "我的业务模块：个人中心、隐私政策、指标编辑",
+  "main": "Index.ets",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@ohos/common": "file:../../common"
+  }
+}
