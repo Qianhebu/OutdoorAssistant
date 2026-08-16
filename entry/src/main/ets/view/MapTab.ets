@@ -1686,8 +1686,8 @@ export struct MapTab {
         // 开始运动按钮 / 运动中数据面板
         this.buildStartWorkoutButton()
 
-        // 运动结束后的轨迹视频生成按钮
-        this.buildTraceVideoButton()
+        // // 运动结束后的轨迹视频生成按钮
+        // this.buildTraceVideoButton()
       }
       .id(this.mapContainerId)
       .width('100%')

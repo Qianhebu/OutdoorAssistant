@@ -18,6 +18,8 @@ import {
 
 export interface RouteDetailParam {
   route: HikingRouteItem;
+  /** 首图按真实宽高比计算出的 hero 高度（vp），用于转场前锁定目标帧，避免高度跳变闪动 */
+  heroHeight?: number;
 }
 
 @Component
@@ -274,7 +276,7 @@ struct RouteDetailPage {
       const param = ctx.pathInfo.param as RouteDetailParam;
       if (param) {
         this.currentPhotoIndex = 0;
-        this.heroHeight = this.deviceWidth;
+        this.heroHeight = (param.heroHeight && param.heroHeight > 0) ? param.heroHeight : this.deviceWidth;
         this.originHeroHeight = this.heroHeight;
         this.params = param;
       }
