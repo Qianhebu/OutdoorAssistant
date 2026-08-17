@@ -6,7 +6,7 @@ export { PageEnum } from './src/main/ets/constant/PageEnum';
 export { StorageKey } from './src/main/ets/constant/StorageKey';
 
 // ===== model =====
-export type { HikingRouteItem, HikingRouteResponse } from './src/main/ets/model/HikingRouteModel';
+export type { HikingRouteItem, HikingRouteResponse, TrackPoint, ElevationPoint, KmPaceItem } from './src/main/ets/model/HikingRouteModel';
 export { getCardAccentColor, getCardSubColor, getDifficultyColor } from './src/main/ets/model/HikingRouteModel';
 export {
   RECORD_METRIC_STORE_KEY,
@@ -29,6 +29,7 @@ export { saveCurrentLocation, getStoredLocation } from './src/main/ets/util/Loca
 export type { SafeAreaInfo } from './src/main/ets/util/SafeAreaManager';
 export { SafeAreaManager } from './src/main/ets/util/SafeAreaManager';
 export { updateStatusBarContentColor } from './src/main/ets/util/SystemBarHelper';
+export { getStringSync } from './src/main/ets/util/ResourceUtils';
 export {
   haversineDistance,
   formatDuration,

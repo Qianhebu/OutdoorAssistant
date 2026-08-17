@@ -1,128 +1,148 @@
 {
   "string": [
     {
-      "name": "module_desc",
-      "value": "module description"
+      "name": "home_locating",
+      "value": "定位中..."
     },
     {
-      "name": "EntryAbility_desc",
-      "value": "description"
+      "name": "home_locate_failed",
+      "value": "定位失败"
     },
     {
-      "name": "EntryAbility_label",
-      "value": "label"
+      "name": "home_loading_more",
+      "value": "加载更多路线..."
     },
     {
-      "name": "location_permission_reason",
-      "value": "用于户外路线导航、轨迹记录和位置推荐，提供更精准的户外服务"
+      "name": "home_list_end",
+      "value": "已到最底部"
     },
     {
-      "name": "background_location_permission_reason",
-      "value": "用于关闭应用后继续记录运动轨迹和位置信息"
+      "name": "home_more_feature",
+      "value": "更多功能"
     },
     {
-      "name": "locating",
-      "value": "正在定位…"
+      "name": "city_title",
+      "value": "选择城市"
     },
     {
-      "name": "searching_gnss",
-      "value": "正在搜索..."
+      "name": "city_current_location",
+      "value": "当前位置"
     },
     {
-      "name": "layer_sheet_title",
-      "value": "选择地图图层"
+      "name": "city_hot_cities",
+      "value": "热门城市"
     },
     {
-      "name": "metric_sheet_title",
-      "value": "显示数据配置"
+      "name": "city_search_placeholder",
+      "value": "搜索城市"
     },
     {
-      "name": "long_press_end",
-      "value": "长按结束"
+      "name": "city_relocate",
+      "value": "重新定位"
     },
     {
-      "name": "end_workout",
-      "value": "结束运动"
+      "name": "city_no_result",
+      "value": "未找到匹配的城市"
     },
     {
-      "name": "continue_workout",
-      "value": "继续运动"
+      "name": "city_locating",
+      "value": "定位中..."
     },
     {
-      "name": "short_distance_confirm",
-      "value": "本次运动距离过短，将不会记录数据。是否结束？"
+      "name": "city_locate_failed",
+      "value": "定位失败"
     },
     {
-      "name": "switch_sport",
-      "value": "切换运动类型"
+      "name": "search_placeholder",
+      "value": "搜索地点、路线、装备..."
     },
     {
-      "name": "voice_started",
-      "value": "已开启"
+      "name": "search_history",
+      "value": "搜索历史"
     },
     {
-      "name": "voice_paused",
-      "value": "已暂停"
+      "name": "search_hot_search",
+      "value": "热门搜索"
     },
     {
-      "name": "voice_resumed",
-      "value": "已恢复"
+      "name": "search_no_history",
+      "value": "暂无搜索历史"
     },
     {
-      "name": "notify_workout_ing",
-      "value": "中 · "
+      "name": "search_no_result",
+      "value": "未找到相关结果"
     },
     {
-      "name": "notify_click_back",
-      "value": "点击回到运动记录"
+      "name": "search_try_other",
+      "value": "换个关键词试试吧"
     },
     {
-      "name": "metric_max_warning",
-      "value": "最多选择 %d 项，请先关闭其他指标后再开启"
+      "name": "route_detail_title",
+      "value": "路线详情"
     },
     {
-      "name": "weather_warning_confirm",
-      "value": "仍要继续"
+      "name": "route_distance",
+      "value": "距离"
     },
     {
-      "name": "weather_warning_cancel",
-      "value": "取消"
+      "name": "route_duration",
+      "value": "用时"
     },
     {
-      "name": "location_disabled",
-      "value": "请先在系统设置中开启位置服务"
+      "name": "route_climb",
+      "value": "爬升"
     },
     {
-      "name": "activity_motion_permission_reason",
-      "value": "用于检测运动步数变化，判断运动是否真实发生，提升运动数据准确性"
+      "name": "route_descent",
+      "value": "下降"
     },
     {
-      "name": "fake_motion_warning",
-      "value": "未检测到步数变化，当前位移可能来自交通工具，运动数据可能不准确"
+      "name": "route_tips",
+      "value": "注意事项"
     },
     {
-      "name": "generating_video",
-      "value": "正在生成轨迹视频…"
+      "name": "banner_detail",
+      "value": "详情"
     },
     {
-      "name": "video_saved",
-      "value": "轨迹视频已保存"
+      "name": "route_elevation_profile",
+      "value": "海拔变化"
     },
     {
-      "name": "video_save_failed",
-      "value": "轨迹视频保存失败"
+      "name": "route_track_map",
+      "value": "路线轨迹"
     },
     {
-      "name": "generate_video",
-      "value": "轨迹回放"
+      "name": "route_km_pace",
+      "value": "每公里配速"
     },
     {
-      "name": "replaying",
-      "value": "回放中"
+      "name": "route_km_label",
+      "value": "公里"
     },
     {
-      "name": "replay_again",
-      "value": "重新播放"
+      "name": "route_pace_label",
+      "value": "配速"
+    },
+    {
+      "name": "route_steps_section",
+      "value": "步数统计"
+    },
+    {
+      "name": "route_steps_unit",
+      "value": "步"
+    },
+    {
+      "name": "route_floors_unit",
+      "value": "层"
+    },
+    {
+      "name": "route_steps_label",
+      "value": "步数"
+    },
+    {
+      "name": "route_floors_label",
+      "value": "爬楼"
     }
   ]
 }

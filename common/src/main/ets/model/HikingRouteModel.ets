@@ -1,3 +1,21 @@
+export interface TrackPoint {
+  latitude: number
+  longitude: number
+  altitude?: number
+}
+
+export interface ElevationPoint {
+  distanceKm: number
+  altitudeMeters: number
+}
+
+export interface KmPaceItem {
+  km: number
+  paceMinPerKm: number
+  elevationGainMeters: number
+  elevationLossMeters: number
+}
+
 export interface HikingRouteItem {
   id: string
   name: string
@@ -17,6 +35,11 @@ export interface HikingRouteItem {
   photos: string[]
   videoUrl: string
   waypointCount: number
+  trackPath?: TrackPoint[]
+  elevationProfile?: ElevationPoint[]
+  totalSteps?: number
+  floorsClimbed?: number
+  kmPaceList?: KmPaceItem[]
 }
 
 export function getCardAccentColor(route: HikingRouteItem): Resource {
