@@ -32,6 +32,11 @@ export interface HikingRouteItem {
   altitudeRange: string
   avgPaceMinPerKm: number
   noticeTips: string
+  startTime?: string
+  endTime?: string
+  userNickname?: string
+  userAccount?: string
+  userAvatar?: string
   photos: string[]
   videoUrl: string
   waypointCount: number

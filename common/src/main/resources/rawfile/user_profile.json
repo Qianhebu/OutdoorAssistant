@@ -1,0 +1,20 @@
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "userId": "hiker_20250401",
+    "nickname": "山野行者",
+    "avatar": "hiking_avatars/avatar_hiker.png",
+    "account": "shanYeXingZhe_outdoor",
+    "gender": "男",
+    "age": 28,
+    "city": "宁波市",
+    "bio": "热爱山野，用脚步丈量大地",
+    "totalHikes": 47,
+    "totalDistanceKm": 386.5,
+    "totalElevationM": 12480,
+    "joinDate": "2024-03-15",
+    "level": "探险家",
+    "badges": ["百公里达成", "万米爬升", "早鸟行者", "古道达人"]
+  }
+}

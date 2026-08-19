@@ -10,4 +10,6 @@ export enum AppStorageKeys {
   CURRENT_LATITUDE = 'currentLatitude',
   CURRENT_LONGITUDE = 'currentLongitude',
   MAP_TYPE = 'selectedMapType',
+  USER_NICKNAME = 'userNickname',
+  USER_AVATAR = 'userAvatar',
 }

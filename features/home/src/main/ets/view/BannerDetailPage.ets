@@ -1,10 +1,6 @@
-import {
-  hdsMaterial, HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType
-} from '@kit.UIDesignKit';
+import { hdsMaterial, HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType } from '@kit.UIDesignKit';
 import { display, LengthMetrics } from '@kit.ArkUI';
-import { AppStorageKeys } from '@ohos/common';
-import { StorageKey } from '@ohos/common';
-import { PageContext } from '@ohos/common';
+import { AppStorageKeys, PageContext, StorageKey } from '@ohos/common';
 
 export interface BannerDetailParam {
   id: number;
@@ -82,7 +78,7 @@ struct BannerDetailPage {
         originalStyle: {
           contentStyle: {
             titleStyle: {
-              mainTitleColor: $r('sys.color.ohos_id_color_text_primary')
+              mainTitleColor: $r('sys.color.ohos_id_color_text_primary_dark')
             },
             menuStyle: {
               backgroundColor: $r('sys.color.comp_background_tertiary'),
