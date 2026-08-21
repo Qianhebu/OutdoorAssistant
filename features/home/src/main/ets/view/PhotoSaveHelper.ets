@@ -1,6 +1,7 @@
 import { fileIo as fs, fileUri } from '@kit.CoreFileKit';
 import { common } from '@kit.AbilityKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 /**
  * 图片保存助手：将 rawfile 图片保存到系统图库
@@ -54,6 +55,7 @@ export class PhotoSaveHelper {
       // 用户拒绝保存
       return false;
     } catch (e) {
+      hilog.error(0x0001, 'PhotoSaveHelper', 'saveRawfileToGallery failed: %{public}s', JSON.stringify(e));
       return false;
     } finally {
       // 6. 清理临时文件
@@ -61,7 +63,7 @@ export class PhotoSaveHelper {
         try {
           fs.unlinkSync(tempPath);
         } catch (e) {
-          // ignore cleanup error
+          hilog.warn(0x0001, 'PhotoSaveHelper', 'cleanup temp file failed: %{public}s', JSON.stringify(e));
         }
       }
     }

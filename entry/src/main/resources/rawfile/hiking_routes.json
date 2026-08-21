@@ -22,7 +22,14 @@
         "noticeTips": "全程路况复杂,建议结伴出行,携带充足饮用水与食物,提前下载离线轨迹,雨天路滑慎行,注意防蚊防蚂蟥,体力充沛者再挑战",
         "waypointCount": 12,
         "videoUrl": "",
-        "photos": [],
+        "photos": [
+          "hiking_photos/小灵峰天池～三圣殿水厍∽毛力水库∽孙湖水库环线/test2.jpg",
+          "hiking_photos/小灵峰天池～三圣殿水厍∽毛力水库∽孙湖水库环线/test2_1.jpg",
+          "hiking_photos/小灵峰天池～三圣殿水厍∽毛力水库∽孙湖水库环线/test2_2.jpg",
+          "hiking_photos/小灵峰天池～三圣殿水厍∽毛力水库∽孙湖水库环线/test2_3.jpg",
+          "hiking_photos/小灵峰天池～三圣殿水厍∽毛力水库∽孙湖水库环线/test2_4.jpg",
+          "hiking_photos/小灵峰天池～三圣殿水厍∽毛力水库∽孙湖水库环线/test2_5.jpg"
+        ],
         "kmPaceList": [
           {
             "km": 1,
@@ -6571,7 +6578,7 @@
         "endTime": "2025-06-22 12:20:00",
         "userNickname": "山野行者",
         "userAccount": "shanYeXingZhe_01",
-        "userAvatar": "hiking_avatars/avatar_hiker_01.png"
+        "userAvatar": "hiking_avatars/avatar_hiker_01.jpg"
       },
       {
         "id": "东岗山亲子小环线",
@@ -9844,7 +9851,7 @@
         "endTime": "2025-05-17 07:54:39",
         "userNickname": "云间漫步",
         "userAccount": "yunJianManBu_02",
-        "userAvatar": "hiking_avatars/avatar_hiker_02.png"
+        "userAvatar": "hiking_avatars/avatar_hiker_02.jpg"
       },
       {
         "id": "奉化唐田黄金古道",
@@ -12971,7 +12978,7 @@
         "endTime": "2025-11-09 08:17:48",
         "userNickname": "溪谷探路者",
         "userAccount": "xiGuTanLu_03",
-        "userAvatar": "hiking_avatars/avatar_hiker_03.png"
+        "userAvatar": "hiking_avatars/avatar_hiker_03.jpg"
       },
       {
         "id": "宁波北仑虎头岭大环线",
@@ -16330,7 +16337,7 @@
         "endTime": "2025-12-14 14:43:20",
         "userNickname": "风中等风来",
         "userAccount": "fengZhongDengFeng_04",
-        "userAvatar": "hiking_avatars/avatar_hiker_04.png"
+        "userAvatar": "hiking_avatars/avatar_hiker_04.jpg"
       },
       {
         "id": "宁波画龙村徒步线",
@@ -20194,7 +20201,7 @@
         "endTime": "2025-11-08 10:21:11",
         "userNickname": "山海客",
         "userAccount": "shanHaiKe_05",
-        "userAvatar": "hiking_avatars/avatar_hiker_05.png"
+        "userAvatar": "hiking_avatars/avatar_hiker_05.jpg"
       },
       {
         "id": "宁波栖霞坑古道",
@@ -20758,7 +20765,7 @@
         "endTime": "2025-09-14 07:27:21",
         "userNickname": "翠竹林间",
         "userAccount": "cuiZhuLinJian_06",
-        "userAvatar": "hiking_avatars/avatar_hiker_06.png"
+        "userAvatar": "hiking_avatars/avatar_hiker_06.jpg"
       },
       {
         "id": "宁波小灵峰保国寺环线",
@@ -25302,7 +25309,7 @@
         "endTime": "2025-09-07 07:26:53",
         "userNickname": "古道西风",
         "userAccount": "guDaoXiFeng_07",
-        "userAvatar": "hiking_avatars/avatar_hiker_07.png"
+        "userAvatar": "hiking_avatars/avatar_hiker_07.jpg"
       },
       {
         "id": "四明山十字裤小环线",
@@ -29326,7 +29333,7 @@
         "endTime": "2025-09-01 07:05:25",
         "userNickname": "岭上白云",
         "userAccount": "lingShangBaiYun_08",
-        "userAvatar": "hiking_avatars/avatar_hiker_08.png"
+        "userAvatar": "hiking_avatars/avatar_hiker_08.jpg"
       },
       {
         "id": "宁波少白岭古道-小白塔-海丝公园-天童老街-垛柱岭古道环线",
@@ -33455,7 +33462,7 @@
         "endTime": "2025-11-23 10:57:19",
         "userNickname": "登峰造极",
         "userAccount": "dengFengZaoJi_09",
-        "userAvatar": "hiking_avatars/avatar_hiker_09.png"
+        "userAvatar": "hiking_avatars/avatar_hiker_09.jpg"
       },
       {
         "id": "栲栳山古道环线",
@@ -37491,7 +37498,7 @@
         "endTime": "2025-04-04 10:18:31",
         "userNickname": "林间拾光",
         "userAccount": "linJianShiGuang_10",
-        "userAvatar": "hiking_avatars/avatar_hiker_10.png"
+        "userAvatar": "hiking_avatars/avatar_hiker_10.jpg"
       },
       {
         "id": "宁波北仑山海轻徒步",
@@ -40150,7 +40157,7 @@
         "endTime": "2026-01-14 09:09:14",
         "userNickname": "踏雪寻梅",
         "userAccount": "taXueXunMei_11",
-        "userAvatar": "hiking_avatars/avatar_hiker_11.png"
+        "userAvatar": "hiking_avatars/avatar_hiker_11.jpg"
       },
       {
         "id": "宁波东岗头-狮红-王仙岗-上兆坑竹海爱心环线",
@@ -43594,7 +43601,7 @@
         "endTime": "2025-11-01 10:01:31",
         "userNickname": "碧水青山",
         "userAccount": "biShuiQingShan_12",
-        "userAvatar": "hiking_avatars/avatar_hiker_12.png"
+        "userAvatar": "hiking_avatars/avatar_hiker_12.jpg"
       },
       {
         "id": "宁波亭溪岭古道",
@@ -43691,7 +43698,7 @@
         "endTime": "2025-08-24 12:34:07",
         "userNickname": "幽径探幽",
         "userAccount": "youJingTanYou_13",
-        "userAvatar": "hiking_avatars/avatar_hiker_13.png"
+        "userAvatar": "hiking_avatars/avatar_hiker_13.jpg"
       },
       {
         "id": "松石岭古道-梅云健身步道 林荫观湖休闲环线",
@@ -46395,7 +46402,7 @@
         "endTime": "2025-07-27 10:03:54",
         "userNickname": "日出东方",
         "userAccount": "riChuDongFang_14",
-        "userAvatar": "hiking_avatars/avatar_hiker_14.png"
+        "userAvatar": "hiking_avatars/avatar_hiker_14.jpg"
       }
     ]
   }

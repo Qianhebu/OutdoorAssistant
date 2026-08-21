@@ -31,14 +31,14 @@ interface ArrowPlan {
  * 路线逐段绘制动画、方向箭头与起终点标记的渐进显示。
  */
 export class RouteMapHelper {
-  private controller?: map.MapComponentController = undefined;
-  private route?: HikingRouteItem = undefined;
+  private controller?: map.MapComponentController;
+  private route?: HikingRouteItem;
   private uiContext: UIContext;
   private topInset: number = 0;
   private deviceHeightVp: number = 0;
   private deviceWidthVp: number = 0;
   private sheetHeightVp: number = 0;
-  private routeGeom?: RouteGeometry = undefined;
+  private routeGeom?: RouteGeometry;
   private isRouteTraceAdded: boolean = false;
   private isEndMarkerAdded: boolean = false;
   private arrowPlan: ArrowPlan[] = [];

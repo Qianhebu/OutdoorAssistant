@@ -143,6 +143,278 @@
     {
       "name": "route_floors_label",
       "value": "爬楼"
+    },
+    {
+      "name": "trail_distance_unit",
+      "value": "公里"
+    },
+    {
+      "name": "trail_time_label",
+      "value": "运动时间"
+    },
+    {
+      "name": "trail_pace_unit",
+      "value": "/公里"
+    },
+    {
+      "name": "trail_calorie_unit",
+      "value": "千卡"
+    },
+    {
+      "name": "trail_heart_rate_unit",
+      "value": "次/分钟"
+    },
+    {
+      "name": "trail_cadence_unit",
+      "value": "步/分钟"
+    },
+    {
+      "name": "trail_stride_unit",
+      "value": "厘米"
+    },
+    {
+      "name": "trail_altitude_unit",
+      "value": "米"
+    },
+    {
+      "name": "trail_speed_unit",
+      "value": "公里/小时"
+    },
+    {
+      "name": "trail_ground_contact_unit",
+      "value": "毫秒"
+    },
+    {
+      "name": "trail_recovery_time_unit",
+      "value": "小时"
+    },
+    {
+      "name": "trail_insight_title",
+      "value": "运动解读"
+    },
+    {
+      "name": "trail_running_form_title",
+      "value": "跑步姿势"
+    },
+    {
+      "name": "trail_avg_ground_contact",
+      "value": "平均触地时间"
+    },
+    {
+      "name": "trail_ground_contact_balance",
+      "value": "平均左右触地平衡"
+    },
+    {
+      "name": "trail_avg_vertical_oscillation",
+      "value": "平均垂直振幅"
+    },
+    {
+      "name": "trail_excellent",
+      "value": "卓越"
+    },
+    {
+      "name": "trail_good",
+      "value": "良好"
+    },
+    {
+      "name": "trail_pace_title",
+      "value": "配速"
+    },
+    {
+      "name": "trail_avg_pace",
+      "value": "平均配速"
+    },
+    {
+      "name": "trail_best_pace",
+      "value": "最快配速"
+    },
+    {
+      "name": "trail_segment_title",
+      "value": "分段"
+    },
+    {
+      "name": "trail_segment_time",
+      "value": "用时"
+    },
+    {
+      "name": "trail_segment_distance",
+      "value": "距离(公里)"
+    },
+    {
+      "name": "trail_segment_pace",
+      "value": "平均配速"
+    },
+    {
+      "name": "trail_segment_hr",
+      "value": "平均心率"
+    },
+    {
+      "name": "trail_segment_cadence",
+      "value": "平均步频"
+    },
+    {
+      "name": "trail_total",
+      "value": "总计"
+    },
+    {
+      "name": "trail_realtime_pace_title",
+      "value": "实时配速"
+    },
+    {
+      "name": "trail_heart_rate_title",
+      "value": "心率"
+    },
+    {
+      "name": "trail_max_heart_rate",
+      "value": "最大心率"
+    },
+    {
+      "name": "trail_avg_heart_rate",
+      "value": "平均心率"
+    },
+    {
+      "name": "trail_recovery_hr_title",
+      "value": "恢复心率"
+    },
+    {
+      "name": "trail_recovery_drop",
+      "value": "降低"
+    },
+    {
+      "name": "trail_recovery_start_end",
+      "value": "开始/结束"
+    },
+    {
+      "name": "trail_training_load_title",
+      "value": "训练表现"
+    },
+    {
+      "name": "trail_aerobic_stress",
+      "value": "有氧训练压力"
+    },
+    {
+      "name": "trail_anaerobic_stress",
+      "value": "无氧训练压力"
+    },
+    {
+      "name": "trail_recovery_time",
+      "value": "恢复时间"
+    },
+    {
+      "name": "trail_cadence_title",
+      "value": "步频"
+    },
+    {
+      "name": "trail_max_cadence",
+      "value": "最大步频"
+    },
+    {
+      "name": "trail_altitude_title",
+      "value": "海拔"
+    },
+    {
+      "name": "trail_max_altitude",
+      "value": "最高海拔"
+    },
+    {
+      "name": "trail_ground_contact_title",
+      "value": "触地时间"
+    },
+    {
+      "name": "trail_min_ground_contact",
+      "value": "最短时长"
+    },
+    {
+      "name": "trail_balance_title",
+      "value": "左右触地平衡"
+    },
+    {
+      "name": "trail_left",
+      "value": "左"
+    },
+    {
+      "name": "trail_right",
+      "value": "右"
+    },
+    {
+      "name": "trail_oscillation_title",
+      "value": "垂直振幅"
+    },
+    {
+      "name": "trail_max_oscillation",
+      "value": "最大幅度"
+    },
+    {
+      "name": "trail_total_calories",
+      "value": "总消耗热量"
+    },
+    {
+      "name": "trail_active_calories",
+      "value": "活动热量"
+    },
+    {
+      "name": "trail_avg_stride",
+      "value": "平均步幅"
+    },
+    {
+      "name": "trail_total_climb",
+      "value": "累计爬升"
+    },
+    {
+      "name": "trail_total_descent",
+      "value": "累计下降"
+    },
+    {
+      "name": "trail_steps_label",
+      "value": "步数"
+    },
+    {
+      "name": "trail_avg_speed",
+      "value": "平均速度"
+    },
+    {
+      "name": "trail_avg_cadence",
+      "value": "平均步频"
+    },
+    {
+      "name": "trail_hr_zone_1_label",
+      "value": "热身"
+    },
+    {
+      "name": "trail_hr_zone_2_label",
+      "value": "燃脂"
+    },
+    {
+      "name": "trail_hr_zone_3_label",
+      "value": "有氧"
+    },
+    {
+      "name": "trail_hr_zone_4_label",
+      "value": "无氧"
+    },
+    {
+      "name": "trail_hr_zone_5_label",
+      "value": "极限"
+    },
+    {
+      "name": "trail_pace_zone_high_label",
+      "value": "高强度"
+    },
+    {
+      "name": "trail_pace_zone_medium_label",
+      "value": "中强度"
+    },
+    {
+      "name": "trail_pace_zone_low_label",
+      "value": "低强度"
+    },
+    {
+      "name": "trail_pace_zone_easy_label",
+      "value": "轻松"
+    },
+    {
+      "name": "trail_pace_zone_recovery_label",
+      "value": "恢复"
     }
   ]
 }

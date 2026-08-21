@@ -3,6 +3,198 @@
     {
       "name": "start_window_background",
       "value": "#000000"
+    },
+    {
+      "name": "polaroid_date_text",
+      "value": "#8B7355"
+    },
+    {
+      "name": "polaroid_shadow",
+      "value": "#33000000"
+    },
+    {
+      "name": "photo_preview_border",
+      "value": "#4DFFFFFF"
+    },
+    {
+      "name": "photo_page_indicator_bg",
+      "value": "#66000000"
+    },
+    {
+      "name": "brand_primary",
+      "value": "#FF8F5A"
+    },
+    {
+      "name": "neutral_bg_page",
+      "value": "#1C1C1E"
+    },
+    {
+      "name": "neutral_bg_card",
+      "value": "#2C2C2E"
+    },
+    {
+      "name": "neutral_bg_secondary",
+      "value": "#3A3A3C"
+    },
+    {
+      "name": "neutral_text_primary",
+      "value": "#F5F5F7"
+    },
+    {
+      "name": "neutral_text_secondary",
+      "value": "#C7C7CC"
+    },
+    {
+      "name": "neutral_text_tertiary",
+      "value": "#8E8E93"
+    },
+    {
+      "name": "neutral_divider",
+      "value": "#3A3A3C"
+    },
+    {
+      "name": "shadow_card",
+      "value": "#0AFFFFFF"
+    },
+    {
+      "name": "pace_bar_bg",
+      "value": "#3A3A3C"
+    },
+    {
+      "name": "pace_bar_start_fast",
+      "value": "#FF8F5A"
+    },
+    {
+      "name": "pace_bar_end_fast",
+      "value": "#FF6B35"
+    },
+    {
+      "name": "pace_bar_start_normal",
+      "value": "#FFBFA8"
+    },
+    {
+      "name": "pace_bar_end_normal",
+      "value": "#FFBFA8"
+    },
+    {
+      "name": "pace_gradient_start",
+      "value": "#4CD964"
+    },
+    {
+      "name": "pace_gradient_mid",
+      "value": "#FFD60A"
+    },
+    {
+      "name": "pace_gradient_end",
+      "value": "#FF8F5A"
+    },
+    {
+      "name": "pace_label_fast",
+      "value": "#4CD964"
+    },
+    {
+      "name": "pace_label_slow",
+      "value": "#FF453A"
+    },
+    {
+      "name": "insight_title",
+      "value": "#FF9F92"
+    },
+    {
+      "name": "insight_text",
+      "value": "#F5F5F7"
+    },
+    {
+      "name": "insight_arrow",
+      "value": "#C7C7CC"
+    },
+    {
+      "name": "insight_gradient_start",
+      "value": "#FFD60A"
+    },
+    {
+      "name": "insight_gradient_mid",
+      "value": "#E88ABF"
+    },
+    {
+      "name": "insight_gradient_end",
+      "value": "#5AC8FA"
+    },
+    {
+      "name": "training_scale_1",
+      "value": "#58D68D"
+    },
+    {
+      "name": "training_scale_2",
+      "value": "#F7DC6F"
+    },
+    {
+      "name": "training_scale_3",
+      "value": "#F5B041"
+    },
+    {
+      "name": "training_scale_4",
+      "value": "#E74C3C"
+    },
+    {
+      "name": "insight_heart_left",
+      "value": "#FF9F92"
+    },
+    {
+      "name": "insight_heart_right",
+      "value": "#7AA6FF"
+    },
+    {
+      "name": "semantic_safe",
+      "value": "#4CD964"
+    },
+    {
+      "name": "chart_hr_zone5",
+      "value": "#FF453A"
+    },
+    {
+      "name": "chart_hr_zone4",
+      "value": "#FF8F5A"
+    },
+    {
+      "name": "chart_hr_zone3",
+      "value": "#FFD60A"
+    },
+    {
+      "name": "chart_hr_zone2",
+      "value": "#4CD964"
+    },
+    {
+      "name": "chart_hr_zone1",
+      "value": "#5AC8FA"
+    },
+    {
+      "name": "chart_pace_high",
+      "value": "#FF453A"
+    },
+    {
+      "name": "chart_pace_medium",
+      "value": "#FF8F5A"
+    },
+    {
+      "name": "chart_pace_low",
+      "value": "#FFD60A"
+    },
+    {
+      "name": "summary_text",
+      "value": "#C7C7CC"
+    },
+    {
+      "name": "collapse_text",
+      "value": "#C7C7CC"
+    },
+    {
+      "name": "collapse_arrow",
+      "value": "#8E8E93"
+    },
+    {
+      "name": "shadow_elevated",
+      "value": "#14FFFFFF"
     }
   ]
 }

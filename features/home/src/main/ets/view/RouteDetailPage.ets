@@ -13,16 +13,40 @@ export interface RouteDetailParam {
   heroHeight?: number;
 }
 
+function createDefaultRouteDetailParam(): RouteDetailParam {
+  const defaultRoute: HikingRouteItem = {
+    id: '',
+    name: '',
+    district: '',
+    address: '',
+    trackType: '',
+    difficulty: '',
+    distanceKm: 0,
+    durationDisplay: '',
+    elevationGainMeters: 0,
+    elevationLossMeters: 0,
+    maxAltitudeMeters: 0,
+    minAltitudeMeters: 0,
+    altitudeRange: '',
+    avgPaceMinPerKm: 0,
+    noticeTips: '',
+    photos: [],
+    videoUrl: '',
+    waypointCount: 0
+  };
+  return { route: defaultRoute };
+}
+
 @Component
 struct RouteDetailPage {
   @StorageLink(AppStorageKeys.TOP_INSET) topInset: number = 0;
-  @State params: RouteDetailParam | null = null;
+  @State params: RouteDetailParam = createDefaultRouteDetailParam();
   @State pageInfos: NavPathStack = new NavPathStack();
-  @State mapOptions?: mapCommon.MapOptions = undefined;
+  @State mapOptions: mapCommon.MapOptions | undefined = undefined;
   @State isDetailSheetShown: boolean = true;
   @State sheetHeightVp: number = 0;
-  private mapCallback?: AsyncCallback<map.MapComponentController> = undefined;
-  private routeMapHelper?: RouteMapHelper = undefined;
+  private mapCallback?: AsyncCallback<map.MapComponentController>;
+  private routeMapHelper?: RouteMapHelper;
   private deviceHeight: number = 0;
   private deviceWidthVp: number = 0;
   private hdsMenuItems: HdsNavigationMenuItemOptions[] = [
@@ -58,7 +82,7 @@ struct RouteDetailPage {
   }
 
   private initRouteMap(): void {
-    if (!this.routeMapHelper || !this.params) {
+    if (!this.routeMapHelper || !this.params.route.id) {
       return;
     }
     this.routeMapHelper.configure(
@@ -80,7 +104,7 @@ struct RouteDetailPage {
       dragBar: true,
       showClose: false,
       enableOutsideInteractive: true,
-      backgroundColor: $r('sys.color.comp_background_primary'),
+      backgroundColor: $r('sys.color.background_secondary'),
       onWillDismiss: (action: DismissSheetAction) => {
         const reason: number = action.reason;
         if (reason === DismissReason.SLIDE || reason === DismissReason.PRESS_BACK) {
@@ -216,12 +240,10 @@ struct RouteDetailPage {
   @Builder
   buildDetailSheet() {
     Column({ space: 0 }) {
-      if (this.params) {
-        RouteDetailSheet({ route: this.params.route })
-      }
+      RouteDetailSheet({ route: this.params.route })
     }
     .width('100%')
-
+    .padding({ left: 16, right: 16 })
   }
 }
 
